@@ -1,5 +1,15 @@
 [![Build Status](https://travis-ci.org/WebAssembly/spec.svg?branch=master)](https://travis-ci.org/WebAssembly/spec)
 
+# Content Security Policy Proposal for WebAssembly
+
+This repository is a clone of github.com/WebAssembly/spec/. It is meant for
+discussion, prototype specification and implementation of a proposal
+to add better Content Security Policy (CSP) support to WebAssembly.
+
+See the [overview](proposals/CSP.md) for a summary of the proposal.
+
+Original README from upstream repository follows...
+
 # spec
 
 This repository holds the sources for the WebAssembly draft specification
