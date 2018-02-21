@@ -134,6 +134,23 @@ Proposed Changes:
    * This applies to hashes, or to origin whitelisting.
 * This sub-proposal only affects WebAssembly.compileStreaming
   and WebAssembly.instatiateStreaming
+  
+### Total Behavior
+
+The desired end state with both of these looks something like this:
+
+Operation | default | unsafe-eval | wasm-eval | unsafe-eval + wasm-eval | w/ SRI ok | w/o SRI bad
+--- | --- | --- | --- | -- | -- | --
+WebAssembly.validate | allow | disallow | allow | allow | N/A | N/A
+new WebAssembly.Module | allow | allow if from instantiateCompile | allow | allow | allow if from instantiateCompile | disallow if from instantiateCompile
+WebAssembly.compile | allow | disallow | allow | allow | N/A | N/A
+WebAssembly.compileStreaming | based on SRI | based on SRI | based on SRI | based on SRI | allow | disallow
+WebAssembly.instantiate | allow | allow if from instantiateCompile | allow | allow | allow if from instantiateCompile | disallow if from instantiateCompile
+WebAssembly.instantiateStreaming | based on SRI | based on SRI | based on SRI | based on SRI | allow | disallow
+new WebAssembly.CompileError | allow | allow | allow | allow | allow | allow
+new WebAssembly.LinkError | allow | allow | allow | allow | allow | allow
+new WebAssembly.Table | allow | allow | allow | allow | allow | allow
+new WebAssembly.Memory | allow | allow | allow | allow | allow | allow
 
 ### Examples
 
