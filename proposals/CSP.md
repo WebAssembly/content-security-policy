@@ -1,9 +1,54 @@
 # WebAssembly Content Security Policy
 
 This proposal attempts to homogenize existing WebAssembly implementation's
-handling of Content Security Policy.
+handling of Content Security Policy (CSP).
 
 It also attempts to extend CSP to better support WebAssemble use cases.
+
+## Background: CSP Threat Model and Use Cases
+
+This section describes the attacks that CSP is meant to protect
+against. WebAssembly's handling of CSP should respect this threat model.
+
+CSP, broadly, allows developers to control what resources can be loaded as part
+of a site. These resources can include images, audio, video, or scripts. Loading
+untrusted resources can lead to a variety of undesirable outcomes. Malicious
+scripts could exfiltrate data from the site. Images could display misleading or
+incorrect information. Fetching resources leaks information about the user to
+untrusted third parties.
+
+While these threats could be protected against in other ways, CSP allows a small
+set of security experts to define a comprehensive policy in one place to prevent
+accidentally loading untrusted resources into the site.
+
+### Out of Scope Threats
+
+* **Bugs in the browser**. We assume correct implementations of image decoders,
+  script compilers, etc. CSP does not protect against malicious inputs that can,
+  for example, trigger buffer overflows.
+* **Resource exhaustion**. Computation performed by scripts uses memory and CPU
+  time and can therefore cause a denial of service on the browser. Protecting
+  against this is one reason site owners use CSP, but denial of service is not a
+  first order consideration for CSP. Scripts are dangerous not because of their
+  resource consumption but because of other effects that can cause.
+
+
+## WebAssembly and CSP
+
+A WebAssembly Instance is made up of the code, or Wasm bytes, and an import
+object. The import object defines the capabilities of the instance, and
+therefore the worst case security behavior. An instance with an empty import
+object cannot cause any effects and is therefore safe to run. If it were
+possible to vet the import object, it would be safe to create instances and run
+from untrusted Wasm code because the behavior of the code would be bounded by
+the capabilities of the import object. In practice, vetting an import object is
+extremely difficult in JavaScript; it is easy to accidentally give access to the
+global object.
+
+CSP turns the problem around. Assuming unrestricted capabilities, what code is
+the developer willing to run on their site? Thus for WebAssembly, CSP will be
+used to define what sources for Wasm bytes are trusted to instantiate and run.
+
 
 ## Behavior of Current Implementations
 
