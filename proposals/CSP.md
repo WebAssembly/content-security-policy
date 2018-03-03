@@ -63,7 +63,7 @@ implementations may choose to translate the WebAssembly code into machine code
 at this step (Chrome does this, WebKit does not). Finally, a WebAssembly module
 is combined with an _import object_ using `WebAssembly.instantiate` to create an
 `WebAssembly.Instance` object. The import object, broadly, defines the
-capabilities of the resulting instance, oprtionally including a
+capabilities of the resulting instance, optionally including a
 `WebAssembly.Memory`, bindings for the WebAssembly function imports, and an
 indirect function call table.  It is at this point that the WebAssembly code is
 actually executable, as the host code can call WebAssembly functions through the
@@ -105,7 +105,7 @@ _Risks:_ equivalent to `new WebAssembly.Module`.
 [**`WebAssembly.instantiate`**](https://webassembly.github.io/spec/js-api/index.html#dom-webassembly-instantiate)
 accepts either WebAssembly bytes or a `WebAssembly.Module` and an import object.
 The function returns a `WebAssembly.Instance` that allows executing the
-WebAssembly code. Is WebAssembly bytes are provided, `instantiate` will first
+WebAssembly code. If WebAssembly bytes are provided, `instantiate` will first
 perform the steps of `WebAssembly.compile`.
 
 _Risks:_ loads executable code into the running program. This code is confined,
