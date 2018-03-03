@@ -87,7 +87,8 @@ synchronous version of `WebAssembly.compile`.
 _Risks:_ many implementations will generate machine code at this step, even
 though it is not yet exposed as executable code to the surrounding program. It's
 possible that this code be used to build an exploit by taking advantage of
-another bug in the implementation.
+another bug in the implementation. This risk is explicitly out of scope for the
+threat model we are working under.
 
 [**`WebAssembly.compile`**](https://webassembly.github.io/spec/js-api/index.html#dom-webassembly-compile)
 provides a `Promise` that resolves to a `WebAssembly.Module` generated from the
