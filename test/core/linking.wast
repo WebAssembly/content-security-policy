@@ -20,7 +20,7 @@
 (assert_return (invoke $Nf "call Mf.call") (i32.const 2))
 
 (module
-  (import "spectest" "print" (func $f (param i32)))
+  (import "spectest" "print_i32" (func $f (param i32)))
   (export "print" (func $f))
 )
 (register "reexport_f")
@@ -71,7 +71,7 @@
   (func (export "h") (result i32) (i32.const -4))
 
   (func (export "call") (param i32) (result i32)
-    (call_indirect 0 (get_local 0))
+    (call_indirect (type 0) (get_local 0))
   )
 )
 (register "Mt" $Mt)
@@ -91,7 +91,7 @@
     (call $f (get_local 0))
   )
   (func (export "call") (param i32) (result i32)
-    (call_indirect 1 (get_local 0))
+    (call_indirect (type 1) (get_local 0))
   )
 )
 
@@ -127,7 +127,7 @@
   (func $i (result i32) (i32.const 6))
 
   (func (export "call") (param i32) (result i32)
-    (call_indirect 0 (get_local 0))
+    (call_indirect (type 0) (get_local 0))
   )
 )
 

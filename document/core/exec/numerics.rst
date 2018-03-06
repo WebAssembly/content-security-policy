@@ -291,7 +291,8 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 .. math::
    \begin{array}{@{}lcll}
    \irems_N(i_1, 0) &=& \{\} \\
-   \irems_N(i_1, i_2) &=& \signed_N^{-1}(i_1 - i_2 \cdot \trunc(\signed_N(i_1) / \signed_N(i_2))) \\
+   \irems_N(i_1, i_2) &=& \signed_N^{-1}(j_1 - j_2 \cdot \trunc(j_1 / j_2)) \\
+     && (\where j_1 = \signed_N(i_1) \wedge j_2 = \signed_N(i_2)) \\
    \end{array}
 
 .. note::
@@ -721,7 +722,7 @@ NaN Propagation
 ...............
 
 When the result of a floating-point operator other than |fneg|, |fabs|, or |fcopysign| is a :ref:`NaN <syntax-nan>`,
-then its sign is non-deterministic and the :ref:`payload <syntax-payload>` computed as follows:
+then its sign is non-deterministic and the :ref:`payload <syntax-payload>` is computed as follows:
 
 * If the payload of all NaN inputs to the operator is :ref:`canonical <canonical-nan>` (including the case that there are no NaN inputs), then the payload of the output is canonical as well.
 
@@ -895,7 +896,7 @@ This non-deterministic result is expressed by the following auxiliary function p
 
 * Else if :math:`z_2` is a zero and :math:`z_1` a value with opposite sign, then return negative infinity.
 
-* Else return the result of dividing :math:`z_2` by :math:`z_1`, :ref:`rounded <aux-ieee>` to the nearest representable value.
+* Else return the result of dividing :math:`z_1` by :math:`z_2`, :ref:`rounded <aux-ieee>` to the nearest representable value.
 
 .. math::
    \begin{array}{@{}lcll}
@@ -1197,7 +1198,7 @@ This non-deterministic result is expressed by the following auxiliary function p
 :math:`\fne_N(z_1, z_2)`
 ........................
 
-* If either :math:`z_1` or :math:`z_2` is a NaN, then return :math:`0`.
+* If either :math:`z_1` or :math:`z_2` is a NaN, then return :math:`1`.
 
 * Else if both :math:`z_1` and :math:`z_2` are zeroes, then return :math:`0`.
 
@@ -1207,8 +1208,8 @@ This non-deterministic result is expressed by the following auxiliary function p
 
 .. math::
    \begin{array}{@{}lcll}
-   \fne_N(\pm \NAN(n), z_2) &=& 0 \\
-   \fne_N(z_1, \pm \NAN(n)) &=& 0 \\
+   \fne_N(\pm \NAN(n), z_2) &=& 1 \\
+   \fne_N(z_1, \pm \NAN(n)) &=& 1 \\
    \fne_N(\pm 0, \mp 0) &=& 0 \\
    \fne_N(z_1, z_2) &=& \bool(z_1 \neq z_2) \\
    \end{array}
@@ -1403,7 +1404,7 @@ Conversions
 :math:`\wrap_{M,N}(i)`
 ......................
 
-* Return :math:`i` modulo :math:`N`.
+* Return :math:`i` modulo :math:`2^N`.
 
 .. math::
    \begin{array}{lll@{\qquad}l}

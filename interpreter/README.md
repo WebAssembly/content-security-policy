@@ -107,7 +107,6 @@ The first creates a new test scripts where all embedded modules are converted to
 The last invocation produces an equivalent, self-contained JavaScript test file.
 The flag `-h` can be used to omit the test harness from the converted file;
 it then is the client's responsibility to provide versions of the necessary functions.
-By default, the generated script will not require `assert_soft_invalid` (see below) to detect validation failures. Use the `-c` flag ("checked hard") to activate these assertions for full validity checks.
 
 #### Command Line Expressions
 
@@ -165,43 +164,48 @@ The implementation consumes a WebAssembly AST given in S-expression syntax. Here
 
 Note: The grammar is shown here for convenience, the definite source is the [specification of the text format](https://webassembly.github.io/spec/text/).
 ```
-value: <int> | <float>
-var: <int> | <name>
-name: $(<letter> | <digit> | _ | . | + | - | * | / | \ | ^ | ~ | = | < | > | ! | ? | @ | # | $ | % | & | | | : | ' | `)+
+num:    <digit> (_? <digit>)*
+hexnum: <hexdigit> (_? <hexdigit>)*
+nat:    <num> | 0x<hexnum>
+int:    <nat> | +<nat> | -<nat>
+float:  <num>.<num>?(e|E <num>)? | 0x<hexnum>.<hexnum>?(p|P <num>)?
+name:   $(<letter> | <digit> | _ | . | + | - | * | / | \ | ^ | ~ | = | < | > | ! | ? | @ | # | $ | % | & | | | : | ' | `)+
 string: "(<char> | \n | \t | \\ | \' | \" | \<hex><hex> | \u{<hex>+})*"
 
-type: i32 | i64 | f32 | f64
-elem_type: anyfunc
+value:  <int> | <float>
+var:    <nat> | <name>
 
 unop:  ctz | clz | popcnt | ...
 binop: add | sub | mul | ...
 relop: eq | ne | lt | ...
-sign: s|u
+sign:  s|u
 offset: offset=<nat>
 align: align=(1|2|4|8|...)
 cvtop: trunc_s | trunc_u | extend_s | extend_u | ...
 
-block_sig : ( result <type>* )*
-func_sig:   ( type <var> )? <param>* <result>*
-global_sig: <type> | ( mut <type> )
-table_sig:  <nat> <nat>? <elem_type>
-memory_sig: <nat> <nat>?
+val_type: i32 | i64 | f32 | f64
+elem_type: anyfunc
+block_type : ( result <val_type>* )*
+func_type:   ( type <var> )? <param>* <result>*
+global_type: <val_type> | ( mut <val_type> )
+table_type:  <nat> <nat>? <elem_type>
+memory_type: <nat> <nat>?
 
 expr:
   ( <op> )
-  ( <op> <expr>+ )                                                  ;; = <expr>+ (<op>)
-  ( block <name>? <block_sig> <instr>* )
-  ( loop <name>? <block_sig> <instr>* )
-  ( if <name>? <block_sig> ( then <instr>* ) ( else <instr>* )? )
-  ( if <name>? <block_sig> <expr>+ ( then <instr>* ) ( else <instr>* )? ) ;; = <expr>+ (if <name>? <block_sig> (then <instr>*) (else <instr>*)?)
+  ( <op> <expr>+ )                                                   ;; = <expr>+ (<op>)
+  ( block <name>? <block_type> <instr>* )
+  ( loop <name>? <block_type> <instr>* )
+  ( if <name>? <block_type> ( then <instr>* ) ( else <instr>* )? )
+  ( if <name>? <block_tyoe> <expr>+ ( then <instr>* ) ( else <instr>* )? ) ;; = <expr>+ (if <name>? <block_type> (then <instr>*) (else <instr>*)?)
 
 instr:
   <expr>
-  <op>                                                              ;; = (<op>)
-  block <name>? <block_sig> <instr>* end <name>?                    ;; = (block <name>? <block_sig> <instr>*)
-  loop <name>? <block_sig> <instr>* end <name>?                     ;; = (loop <name>? <block_sig> <instr>*)
-  if <name>? <block_sig> <instr>* end <name>?                       ;; = (if <name>? <block_sig> (then <instr>*))
-  if <name>? <block_sig> <instr>* else <name>? <instr>* end <name>? ;; = (if <name>? <block_sig> (then <instr>*) (else <instr>*))
+  <op>                                                               ;; = (<op>)
+  block <name>? <block_type> <instr>* end <name>?                    ;; = (block <name>? <block_type> <instr>*)
+  loop <name>? <block_type> <instr>* end <name>?                     ;; = (loop <name>? <block_type> <instr>*)
+  if <name>? <block_type> <instr>* end <name>?                       ;; = (if <name>? <block_type> (then <instr>*))
+  if <name>? <block_type> <instr>* else <name>? <instr>* end <name>? ;; = (if <name>? <block_type> (then <instr>*) (else <instr>*))
 
 op:
   unreachable
@@ -211,7 +215,7 @@ op:
   br_table <var>+
   return
   call <var>
-  call_indirect <var>
+  call_indirect <func_type>
   drop
   select
   get_local <var>
@@ -219,49 +223,49 @@ op:
   tee_local <var>
   get_global <var>
   set_global <var>
-  <type>.load((8|16|32)_<sign>)? <offset>? <align>?
-  <type>.store(8|16|32)? <offset>? <align>?
+  <val_type>.load((8|16|32)_<sign>)? <offset>? <align>?
+  <val_type>.store(8|16|32)? <offset>? <align>?
   current_memory
   grow_memory
-  <type>.const <value>
-  <type>.<unop>
-  <type>.<binop>
-  <type>.<testop>
-  <type>.<relop>
-  <type>.<cvtop>/<type>
+  <val_type>.const <value>
+  <val_type>.<unop>
+  <val_type>.<binop>
+  <val_type>.<testop>
+  <val_type>.<relop>
+  <val_type>.<cvtop>/<val_type>
 
-func:    ( func <name>? <func_sig> <local>* <instr>* )
+func:    ( func <name>? <func_type> <local>* <instr>* )
          ( func <name>? ( export <string> ) <...> )                         ;; = (export <string> (func <N>)) (func <name>? <...>)
-         ( func <name>? ( import <string> <string> ) <func_sig>)            ;; = (import <name>? <string> <string> (func <func_sig>))
-param:   ( param <type>* ) | ( param <name> <type> )
-result:  ( result <type>* )
-local:   ( local <type>* ) | ( local <name> <type> )
+         ( func <name>? ( import <string> <string> ) <func_type>)           ;; = (import <name>? <string> <string> (func <func_type>))
+param:   ( param <val_type>* ) | ( param <name> <val_type> )
+result:  ( result <val_type>* )
+local:   ( local <val_type>* ) | ( local <name> <val_type> )
 
-global:  ( global <name>? <global_sig> <instr>* )
+global:  ( global <name>? <global_type> <instr>* )
          ( global <name>? ( export <string> ) <...> )                       ;; = (export <string> (global <N>)) (global <name>? <...>)
-         ( global <name>? ( import <string> <string> ) <global_sig> )       ;; = (import <name>? <string> <string> (global <global_sig>))
-table:   ( table <name>? <table_sig> )
+         ( global <name>? ( import <string> <string> ) <global_type> )      ;; = (import <name>? <string> <string> (global <global_type>))
+table:   ( table <name>? <table_type> )
          ( table <name>? ( export <string> ) <...> )                        ;; = (export <string> (table <N>)) (table <name>? <...>)
-         ( table <name>? ( import <string> <string> ) <table_sig> )         ;; = (import <name>? <string> <string> (table <table_sig>))
+         ( table <name>? ( import <string> <string> ) <table_type> )        ;; = (import <name>? <string> <string> (table <table_type>))
          ( table <name>? ( export <string> )* <elem_type> ( elem <var>* ) ) ;; = (table <name>? ( export <string> )* <size> <size> <elem_type>) (elem (i32.const 0) <var>*)
 elem:    ( elem <var>? (offset <instr>* ) <var>* )
          ( elem <var>? <expr> <var>* )                                      ;; = (elem <var>? (offset <expr>) <var>*)
-memory:  ( memory <name>? <memory_sig> )
+memory:  ( memory <name>? <memory_type> )
          ( memory <name>? ( export <string> ) <...> )                       ;; = (export <string> (memory <N>))+ (memory <name>? <...>)
-         ( memory <name>? ( import <string> <string> ) <memory_sig> )       ;; = (import <name>? <string> <string> (memory <memory_sig>))
+         ( memory <name>? ( import <string> <string> ) <memory_type> )      ;; = (import <name>? <string> <string> (memory <memory_type>))
          ( memory <name>? ( export <string> )* ( data <string>* )           ;; = (memory <name>? ( export <string> )* <size> <size>) (data (i32.const 0) <string>*)
 data:    ( data <var>? ( offset <instr>* ) <string>* )
          ( data <var>? <expr> <string>* )                                   ;; = (data <var>? (offset <expr>) <string>*)
 
 start:   ( start <var> )
 
-typedef: ( type <name>? ( func <func_sig> ) )
+typedef: ( type <name>? ( func <param>* <result>* ) )
 
 import:  ( import <string> <string> <imkind> )
-imkind:  ( func <name>? <func_sig> )
-         ( global <name>? <global_sig> )
-         ( table <name>? <table_sig> )
-         ( memory <name>? <memory_sig> )
+imkind:  ( func <name>? <func_type> )
+         ( global <name>? <global_type> )
+         ( table <name>? <table_type> )
+         ( memory <name>? <memory_type> )
 export:  ( export <string> <exkind> )
 exkind:  ( func <var> )
          ( global <var> )
@@ -326,7 +330,6 @@ assertion:
   ( assert_trap <action> <failure> )         ;; assert action traps with given failure string
   ( assert_malformed <module> <failure> )    ;; assert module cannot be decoded with given failure string
   ( assert_invalid <module> <failure> )      ;; assert module is invalid with given failure string
-  ( assert_soft_invalid <module> <failure> ) ;; assert module is for cases that are not required to be checked
   ( assert_unlinkable <module> <failure> )   ;; assert module fails to link
   ( assert_trap <module> <failure> )         ;; assert module traps on instantiation
 
@@ -350,7 +353,6 @@ The `input` and `output` meta commands determine the requested file format from 
 
 The interpreter supports a "dry" mode (flag `-d`), in which modules are only validated. In this mode, all actions and assertions are ignored.
 It also supports an "unchecked" mode (flag `-u`), in which module definitions are not validated before use.
-Finally, "checked hard" mode (flag `-c`), will require `assert_soft_valid` assertions to succeed. When outputing JavaScript scripts, this flag also controls how the created script implements this assertions.
 
 ## Abstract Syntax
 
