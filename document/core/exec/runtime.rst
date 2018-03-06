@@ -355,10 +355,9 @@ These entries can occur on the stack in any order during the execution of a prog
 Stack entries are described by abstract syntax as follows.
 
 .. note::
-   It is possible to model the WebAssebmly semantics using separate stacks for operands, control constructs, and calls.
+   It is possible to model the WebAssembly semantics using separate stacks for operands, control constructs, and calls.
    However, because the stacks are interdependent, additional book keeping about associated stack heights would be required.
    For the purpose of this specification, an interleaved representation is simpler.
-
 
 Values
 ......
@@ -562,28 +561,40 @@ Finally, the following definition of *evaluation context* and associated structu
    \production{(evaluation contexts)} & E &::=&
      [\_] ~|~
      \val^\ast~E~\instr^\ast ~|~
-     \LABEL_n\{\instr^\ast\}~E~\END ~|~
-     \FRAME_n\{\frame\}~E~\END \\
+     \LABEL_n\{\instr^\ast\}~E~\END \\
    \end{array}
 
 .. math::
+   \begin{array}{l}
    \begin{array}{lcl@{\qquad}l}
    S; F; E[\instr^\ast] &\stepto& S'; F'; E[{\instr'}^\ast]
-     & (\iff S; F; \instr^\ast \stepto S'; F'; {\instr'}^\ast) \\
+   \end{array}
+   \\ \qquad
+     (\iff S; F; \instr^\ast \stepto S'; F'; {\instr'}^\ast) \\
+   \begin{array}{lcl@{\qquad}l}
+   S; F; \FRAME_n\{F'\}~\instr^\ast~\END &\stepto& S'; F; \FRAME_n\{F''\}~\instr'^\ast~\END
+   \end{array}
+   \\ \qquad
+     (\iff S; F'; \instr^\ast \stepto S'; F''; {\instr'}^\ast) \\[1ex]
+   \begin{array}{lcl@{\qquad}l}
    S; F; E[\TRAP] &\stepto& S; F; \TRAP
-     & (\iff E \neq [\_]) \\
+     &(\iff E \neq [\_]) \\
+   S; F; \FRAME_n\{F'\}~\TRAP~\END &\stepto& S; F; \TRAP
+   \end{array} \\
    \end{array}
 
 Reduction terminates when a thread's instruction sequence has been reduced to a :ref:`result <syntax-result>`,
 that is, either a sequence of :ref:`values <syntax-val>` or to a |TRAP|.
 
 .. note::
-   For example, the following instruction sequence,
+   The restriction on evaluation contexts rules out contexts like :math:`[\_]` and :math:`\epsilon~[\_]~\epsilon` for which :math:`E[\TRAP] = \TRAP`.
+
+   For an example of reduction under evaluation contexts, consider the following instruction sequence.
 
    .. math::
        (\F64.\CONST~x_1)~(\F64.\CONST~x_2)~\F64.\NEG~(\F64.\CONST~x_3)~\F64.\ADD~\F64.\MUL
 
-   can be decomposed into :math:`E[(\F64.\CONST~x_2)~\F64.\NEG]` where
+   This can be decomposed into :math:`E[(\F64.\CONST~x_2)~\F64.\NEG]` where
 
    .. math::
       E = (\F64.\CONST~x_1)~[\_]~(\F64.\CONST~x_3)~\F64.\ADD~\F64.\MUL

@@ -7,7 +7,7 @@ Soundness
 The :ref:`type system <type-system>` of WebAssembly is *sound*, implying both *type safety* and *memory safety* with respect to the WebAssembly semantics. For example:
 
 * All types declared and derived during validation are respected at run time;
-  e.g., every :ref:`local <syntax-local>` or :ref:`global <syntax-global>` variable will only contain type-correct values, every :ref:`instruction <syntax-instr>` will only be applied to operands of the expected type, and every :ref:`function <syntax-func>` :ref:`invocation <exec-invocation>` always evaluates to a result of the right type.
+  e.g., every :ref:`local <syntax-local>` or :ref:`global <syntax-global>` variable will only contain type-correct values, every :ref:`instruction <syntax-instr>` will only be applied to operands of the expected type, and every :ref:`function <syntax-func>` :ref:`invocation <exec-invocation>` always evaluates to a result of the right type (if it does not :ref:`trap <trap>`).
 
 * No memory location will be read or written except those explicitly defined by the program, i.e., as a :ref:`local <syntax-local>`, a :ref:`global <syntax-global>`, an element in a :ref:`table <syntax-table>`, or a location within a linear :ref:`memory <syntax-mem>`.
 
@@ -709,10 +709,10 @@ Theorems
 ~~~~~~~~
 
 Given the definition of :ref:`valid configurations <valid-config>`,
-the standard soundness theorems hold.
+the standard soundness theorems hold. [#cite-cpp2018]_
 
 **Theorem (Preservation).**
-If the :ref:`configuration <syntax-config>` :math:`S;T` is :ref:`valid <valid-config>` with :ref:`result type <syntax-resulttype>` :math:`[t^\ast]` (i.e., :math:`\vdashconfig S;T : [t^\ast]`),
+If a :ref:`configuration <syntax-config>` :math:`S;T` is :ref:`valid <valid-config>` with :ref:`result type <syntax-resulttype>` :math:`[t^\ast]` (i.e., :math:`\vdashconfig S;T : [t^\ast]`),
 and steps to :math:`S';T'` (i.e., :math:`S;T \stepto S';T'`),
 then :math:`S';T'` is a valid configuration with the same resulttype (i.e., :math:`\vdashconfig S';T' : [t^\ast]`).
 Furthermore, :math:`S'` is an :ref:`extension <extend-store>` of :math:`S` (i.e., :math:`\vdashstoreextends S \extendsto S'`).
@@ -721,18 +721,25 @@ A *terminal* :ref:`thread <syntax-thread>` is one whose sequence of :ref:`instru
 A terminal configuration is a configuration whose thread is terminal.
 
 **Theorem (Progress).**
-If the :ref:`configuration <syntax-config>` :math:`S;T` is :ref:`valid <valid-config>` (i.e., :math:`\vdashconfig S;T : [t^\ast]` with some :ref:`result type <syntax-resulttype>` :math:`[t^\ast]`),
+If a :ref:`configuration <syntax-config>` :math:`S;T` is :ref:`valid <valid-config>` (i.e., :math:`\vdashconfig S;T : [t^\ast]` for some :ref:`result type <syntax-resulttype>` :math:`[t^\ast]`),
 then either it is terminal,
 or it can step to some configuration :math:`S';T'` (i.e., :math:`S;T \stepto S';T'`).
 
 From Preservation and Progress the soundness of the WebAssembly type system follows directly.
 
 **Corollary (Soundness).**
-Every thread in a valid configuration either runs forever, traps, or terminates with a result that has the expected type.
+If a :ref:`configuration <syntax-config>` :math:`S;T` is :ref:`valid <valid-config>` (i.e., :math:`\vdashconfig S;T : [t^\ast]` for some :ref:`result type <syntax-resulttype>` :math:`[t^\ast]`),
+then it either diverges or takes a finite number of steps to reach a terminal configuration :math:`S';T'` (i.e., :math:`S;T \stepto^\ast S';T'`) that is valid with the same resulttype (i.e., :math:`\vdashconfig S';T' : [t^\ast]`)
+and where :math:`S'` is an :ref:`extension <extend-store>` of :math:`S` (i.e., :math:`\vdashstoreextends S \extendsto S'`).
 
+In other words, every thread in a valid configuration either runs forever, traps, or terminates with a result that has the expected type.
 Consequently, given a :ref:`valid store <valid-store>`, no computation defined by :ref:`instantiation <exec-instantiation>` or :ref:`invocation <exec-invocation>` of a valid module can "crash" or otherwise (mis)behave in ways not covered by the :ref:`execution <exec>` semantics given in this specification.
 
 
 .. [#cite-pldi2017]
    The formalization and theorems are derived from the following article:
    Andreas Haas, Andreas Rossberg, Derek Schuff, Ben Titzer, Dan Gohman, Luke Wagner, Alon Zakai, JF Bastien, Michael Holman. |PLDI2017|_. Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI 2017). ACM 2017.
+
+.. [#cite-cpp2018]
+   A machine-verified version of the formalization and soundness proof is described in the following article:
+   Conrad Watt. |CPP2018|_. Proceedings of the 7th ACM SIGPLAN Conference on Certified Programs and Proofs (CPP 2018). ACM 2018.

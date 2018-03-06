@@ -262,7 +262,7 @@ Functions
 .. index:: invocation, value, result
 .. _embed-invoke-func:
 
-:math:`\F{invoke\_func}(\store, \funcaddr, \val^\ast) : (\store, \val^\ast ~|~ \error`)`
+:math:`\F{invoke\_func}(\store, \funcaddr, \val^\ast) : (\store, \val^\ast ~|~ \error)`
 ........................................................................................
 
 1. Assert: :math:`\store.\SFUNCS[\funcaddr]` exists.
@@ -326,8 +326,8 @@ Tables
 
 .. _embed-read-table:
 
-:math:`\F{read\_table}(\store, \tableaddr, i) : \funcaddr ~|~ \error`
-.....................................................................
+:math:`\F{read\_table}(\store, \tableaddr, i) : \funcaddr^? ~|~ \error`
+.......................................................................
 
 1. Assert: :math:`\store.\STABLES[\tableaddr]` exists.
 
