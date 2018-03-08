@@ -290,6 +290,7 @@ namespace WebAssembly {
     Promise&lt;WebAssemblyInstantiatedSource> instantiate(
         BufferSource bytes, optional object importObject);
 
+
     Promise&lt;Instance> instantiate(
         Module moduleObject, optional object importObject);
 };
@@ -592,6 +593,7 @@ interface Module {
     The <dfn constructor for="Module">Module(|bytes|)</dfn> constructor, when invoked, performs the follwing steps:
 
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
+    1. Perform [$HostEnsureCanCompileWasmBytes()$]
     1. [=Compile a WebAssembly module|Compile the WebAssembly module=] |stableBytes| and store the result as |module|.
     1. If |module| is [=error=], throw a {{CompileError}} exception.
     1. Set **this**.\[[Module]] to |module|.
@@ -1204,6 +1206,19 @@ Note: ECMAScript doesn't specify any sort of behavior on out-of-memory condition
 
     See [Issue 879](https://github.com/WebAssembly/spec/issues/879) for further discussion.
 </div>
+
+<h2>Implementation-defined Operations</h2>
+
+<h3>HostEnsureCanCompileWasmBytes()</h3>
+
+HostEnsureCanCompileWasmBytes is an implementation-defined abstract operation
+that allows host environments to block certain WebAssembly functions which
+compile bytes into WebAssembly code.
+
+An implementation of HostEnsureCanCompileWasmBytes may complete normally or
+abruptly. Any abrupt completions will be propagated to its callers. The default
+implementation of HostEnsureCanCompileWasmBytes is to unconditionally return an
+empty normal completion.
 
 <h2 id="limits">Implementation-defined Limits</h2>
 
