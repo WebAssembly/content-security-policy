@@ -112,6 +112,7 @@ Note: This algorithm accepts a {{Response}} object, or a
 
         4. If |response| is not [=CORS-same-origin=], [=reject=] |returnValue| with a {{TypeError}} and abort these substeps.
         1. If |response|'s [=response/status=] is not an [=ok status=], [=reject=] |returnValue| with a {{TypeError}} and abort these substeps.
+        1. Perform [$HostEnsureCanCompileWasmResponse(response)$]
         1. [=Consume body|consume=] |response|'s body as an {{ArrayBuffer}}, and let |bodyPromise| be the result.
 
         Note: Although it is specified here that the response is consumed entirely before compilation proceeds, that is purely for ease of specification; implementations are likely to instead perform processing in a streaming fashion. The different is unobservable, and thus the simpler model is specified. <!-- Using consume is a bit silly as it creates an ArrayBuffer but then we just want the underlying bytes. This is because of how streams is specced in terms of promises and JS objects whereas we want to operate more directly on the underlying concept. We can revisit this if things change in the Streams/Fetch specs. -->
@@ -124,6 +125,17 @@ Note: This algorithm accepts a {{Response}} object, or a
          1. [=Reject=] |returnValue| with |reason|.
      1. Return |returnValue|.
 </div>
+
+<h3 id="host-ensure-can-compile-wasm-response">HostEnsureCanCompileWasmResponse(response)</h3>
+
+<dfn abstract-op>HostEnsureCanCompileWasmResponse(response)</dfn> is an implementation-defined abstract operation
+that allows host environments to block certain WebAssembly functions which
+compile bytes from a Response object into WebAssembly code.
+
+An implementation of HostEnsureCanCompileWasmResponse may complete normally or
+abruptly. Any abrupt completions will be propagated to its callers. The default
+implementation of HostEnsureCanCompileWasmResponse is to unconditionally return an
+empty normal completion.
 
 <h2 id="conventions">Developer-Facing Display Conventions</h2>
 
