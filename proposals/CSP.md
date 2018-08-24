@@ -49,6 +49,84 @@ CSP turns the problem around. Assuming unrestricted capabilities, what code is
 the developer willing to run on their site? Thus for WebAssembly, CSP will be
 used to define what sources for Wasm bytes are trusted to instantiate and run.
 
+### Summary of WebAssembly APIs and Their Risks
+
+This section introduces the APIs provided by WebAssembly that are relevant to
+Content Security Policy.
+
+Executing WebAssembly has several steps. First there are the raw WebAssembly
+bytes, which typically are loaded using the [fetch
+API](https://fetch.spec.whatwg.org/). Next, the bytes are compiled using
+`WebAssembly.compile` or `WebAssembly.compileStreaming` into a
+`WebAssembly.Module`. This module is not yet executable, but WebAssembly
+implementations may choose to translate the WebAssembly code into machine code
+at this step (Chrome does this, WebKit does not). Finally, a WebAssembly module
+is combined with an _import object_ using `WebAssembly.instantiate` to create an
+`WebAssembly.Instance` object. The import object, broadly, defines the
+capabilities of the resulting instance, optionally including a
+`WebAssembly.Memory`, bindings for the WebAssembly function imports, and an
+indirect function call table.  It is at this point that the WebAssembly code is
+actually executable, as the host code can call WebAssembly functions through the
+instance's exports.
+
+These steps provide the core of the WebAssembly API, but there are several other
+methods provided as well. These are summarized below along with their risks that
+are related to CSP.
+
+[**`WebAssembly.validate`**](https://webassembly.github.io/spec/js-api/index.html#dom-webassembly-validate)
+checks whether the given bytes comprise a valid WebAssembly program. In other
+words, it checks whether the bytes are syntactically correct and valid according
+to the WebAssembly type system.
+
+_Risks:_ None.
+
+[**`new WebAssembly.Module`**](https://webassembly.github.io/spec/js-api/index.html#dom-module-module)
+synchronously creates a `WebAssembly.Module` from WebAssembly bytes. This is a
+synchronous version of `WebAssembly.compile`.
+
+_Risks:_ many implementations will generate machine code at this step, even
+though it is not yet exposed as executable code to the surrounding program. It's
+possible that this code be used to build an exploit by taking advantage of
+another bug in the implementation. This risk is explicitly out of scope for the
+threat model we are working under.
+
+[**`WebAssembly.compile`**](https://webassembly.github.io/spec/js-api/index.html#dom-webassembly-compile)
+provides a `Promise` that resolves to a `WebAssembly.Module` generated from the
+provided WebAssembly bytes. This is an asynchronous version of `new
+WebAssembly.Module`.
+
+_Risks:_ equivalent to `new WebAssembly.Module`.
+
+[**`WebAssembly.compileStreaming`**](https://webassembly.github.io/spec/web-api/index.html#dom-webassembly-compilestreaming)
+creates a `WebAssembly.Module` from the WebAssembly bytes contained in the
+provided `Response` object.
+
+_Risks:_ equivalent to `new WebAssembly.Module`.
+
+[**`WebAssembly.instantiate`**](https://webassembly.github.io/spec/js-api/index.html#dom-webassembly-instantiate)
+accepts either WebAssembly bytes or a `WebAssembly.Module` and an import object.
+The function returns a `WebAssembly.Instance` that allows executing the
+WebAssembly code. If WebAssembly bytes are provided, `instantiate` will first
+perform the steps of `WebAssembly.compile`.
+
+_Risks:_ loads executable code into the running program. This code is confined,
+being only able to access objects reachable from the import object. The instance
+does not have unrestricted access to the JavaScript global object.
+
+[**`WebAssembly.instantiateStreaming`**](https://webassembly.github.io/spec/web-api/index.html#dom-webassembly-instantiatestreaming)
+accepts a `Response` containing WebAssembly bytes and an import object, performs
+the operations behind `WebAssembly.compileStreaming` on these bytes and then
+creates a `WebAssembly.Instance`.
+
+_Risks:_ equivalent to `WebAssembly.instantiate`.
+
+### Recommended Application of CSP
+
+Given the threat model for CSP, operations that load executable code should be
+subject to CSP restrictions. This would cover `WebAssembly.instantiate` and
+`WebAssembly.instantiateStreaming`. There are risks with `WebAssembly.compile`
+and `WebAssembly.compileStreaming`, but these risks are explicitly outside the
+CSP threat model.
 
 ## Behavior of Current Implementations
 
