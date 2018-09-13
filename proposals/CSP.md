@@ -156,7 +156,9 @@ WebAssembly.validate | yes | yes | yes | yes
 new WebAssembly.Module | no | yes | yes | yes
 WebAssembly.compile | no | yes | yes | yes
 WebAssembly.compileStreaming | no | yes | yes | yes
-WebAssembly.instantiate | no | no | yes | yes
+new WebAssembly.Instance | ? | ? | ? | ?
+WebAssembly.instantiate(WebAssembly.Module, ...) | no | no | yes | yes
+WebAssembly.instantiate(BufferSource, ...) | no | no | yes | yes
 WebAssembly.instantiateStreaming | no | no | yes | yes
 new WebAssembly.CompileError | yes | yes | yes | yes
 new WebAssembly.LinkError | yes | yes | yes | yes
@@ -212,7 +214,9 @@ WebAssembly.validate | yes
 new WebAssembly.Module | no
 WebAssembly.compile | no
 WebAssembly.compileStreaming | no
-WebAssembly.instantiate | no
+new WebAssembly.Instance | yes
+WebAssembly.instantiate(WebAssembly.Module, ...) | yes
+WebAssembly.instantiate(BufferSource, ...) | no
 WebAssembly.instantiateStreaming | no
 new WebAssembly.CompileError | yes
 new WebAssembly.LinkError | yes
