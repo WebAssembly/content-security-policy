@@ -122,11 +122,19 @@ _Risks:_ equivalent to `WebAssembly.instantiate`.
 
 ### Recommended Application of CSP
 
-Given the threat model for CSP, operations that load executable code should be
-subject to CSP restrictions. This would cover `WebAssembly.instantiate` and
-`WebAssembly.instantiateStreaming`. There are risks with `WebAssembly.compile`
-and `WebAssembly.compileStreaming`, but these risks are explicitly outside the
-CSP threat model.
+CSP policies can be used to restrict the construction of `WebAssembly.Module` objects.
+Given the threat model for CSP, operations that load Wasm bytes over the network
+or create `WebAssembly.Module` objects from raw bytes should be subject to CSP
+restrictions.
+
+Instantiating `WebAssembly.Module` objects is considered safe.
+Unlike JavaScript `eval`, WebAssembly is capabilities-based: an instance
+may only access the functionality explicitly supplied to it as imports and cannot
+access ambient state such as the JavaScript global object.
+Protecting the JavaScript-supplied imports to a WebAssembly module is orthogonal
+to CSP directives for WebAssembly.
+Thus instantiating `WebAssembly.Module` objects need not be subject to CSP
+restrictions.
 
 ## Behavior of Current Implementations
 
