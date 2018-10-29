@@ -173,12 +173,8 @@ Proposed Changes:
 * Response.url will be "hardened" to allow it (or it with a taint track bit)
   to be trusted to carry information regarding the origin of a fetch
   response.
-* An immutable opaque bit mimeTypeWasm will be added to Response to capture
-  whether the original Response had mime type 'application/wasm'.
-   * Question: Does this interfere with service worker?
 * WebAssembly compilation / instantiation requests that would
   be allowed if they were script src's for non-inline JavaScript
-  which also have mimeTypeWasm,
   will also be allowed for WebAssembly.
    * This applies to hashes, or to origin whitelisting.
 * This sub-proposal only affects WebAssembly.compileStreaming
