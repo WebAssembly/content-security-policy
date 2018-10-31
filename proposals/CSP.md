@@ -138,7 +138,7 @@ new WebAssembly.Table | yes
 new WebAssembly.Memory | yes
 
 
-## Proposed 'wasm-eval' Directive
+## Proposed 'wasm-unsafe-eval' Directive
 
 WebAssembly compilation is less prone to being spoofed in the way
 JavaScript is. Further, WebAssembly has an explicitly specified scope,
@@ -153,13 +153,13 @@ NOTE: Providing a directive to allow JavaScript eval() without WebAssembly
 doesn't seem immediately useful, and so has been left out intentionally.
 
 We propose:
-* Allow the 'wasm-eval' directive under each directive that currently
+* Allow the 'wasm-unsafe-eval' directive under each directive that currently
   supports 'unsafe-eval' (this is currently all directives because
   directives can defer to each other).
 * For the `script-src` directive (directly or by reference),
-  interpret 'wasm-eval' to mean
+  interpret 'wasm-unsafe-eval' to mean
   that all WebAssembly operations should be allowed.
-  (Without allowing eval()).
+  (Without allowing JavaScript eval()).
 
 
 ## Proposed Origin Bound Permission
@@ -188,7 +188,7 @@ Proposed Changes:
 
 The desired end state with both of these looks something like this:
 
-Operation | default | unsafe-eval | wasm-eval | unsafe-eval + wasm-eval | w/ SRI ok | w/o SRI bad
+Operation | default | unsafe-eval | wasm-unsafe-eval | unsafe-eval + wasm-unsafe-val | w/ SRI ok | w/o SRI bad
 --- | --- | --- | --- | -- | -- | --
 WebAssembly.validate | allow | disallow | allow | allow | N/A | N/A
 new WebAssembly.Module | allow | allow if from instantiateCompile | allow | allow | allow if from instantiateCompile | disallow if from instantiateCompile
