@@ -186,12 +186,12 @@ The desired end state with both of these looks something like this:
 
 Operation | default | unsafe-eval | wasm-unsafe-eval | unsafe-eval + wasm-unsafe-val | w/ SRI ok | w/o SRI bad
 --- | --- | --- | --- | -- | -- | --
-WebAssembly.validate | allow | disallow | allow | allow | N/A | N/A
 new WebAssembly.Module | allow | allow if from instantiateCompile | allow | allow | allow if from instantiateCompile | disallow if from instantiateCompile
 WebAssembly.compile | allow | disallow | allow | allow | N/A | N/A
 WebAssembly.compileStreaming | based on SRI | based on SRI | based on SRI | based on SRI | allow | disallow
 WebAssembly.instantiate | allow | allow if from instantiateCompile | allow | allow | allow if from instantiateCompile | disallow if from instantiateCompile
 WebAssembly.instantiateStreaming | based on SRI | based on SRI | based on SRI | based on SRI | allow | disallow
+WebAssembly.validate | allow | allow | allow | allow | allow | allow
 new WebAssembly.CompileError | allow | allow | allow | allow | allow | allow
 new WebAssembly.LinkError | allow | allow | allow | allow | allow | allow
 new WebAssembly.Table | allow | allow | allow | allow | allow | allow
