@@ -185,7 +185,7 @@ Proposed Changes:
 The checks performed for web assembly operations is summarized as follows:
 
 Operation | default | no unsafe-eval | with wasm-unsafe-eval | with unsafe-eval and wasm-unsafe-val 
---- | --- | --- | --- | -- | -- | --
+--- | --- | --- | --- | ---
 JavaScript eval                                  | allow | SRI-hash | SRI-hash | allow
 new WebAssembly.Module(bytes)                    | allow | SRI-hash | allow | allow 
 WebAssembly.compile(bytes)                       | allow | SRI-hash | allow | allow 
