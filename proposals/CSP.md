@@ -204,6 +204,7 @@ Where SRI-hash means applying sub-resource-integrity checks based on the hash of
 rejecting the operation if the hash does not match whitelisted hashes,
 and script-src means rejecting operations that are not allowed by the CSP
 policy's directives for the source of scripts, e.g. script-src restricting origins.
+Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`.
 
 ### Examples
 
