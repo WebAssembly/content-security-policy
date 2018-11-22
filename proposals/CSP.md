@@ -180,23 +180,31 @@ Proposed Changes:
 * This sub-proposal only affects WebAssembly.compileStreaming
   and WebAssembly.instatiateStreaming
   
-### Total Behavior
+### CSP Policy Application Summary
 
-The desired end state with both of these looks something like this:
+The checks performed for web assembly operations is summarized as follows:
 
-Operation | default | unsafe-eval | wasm-unsafe-eval | unsafe-eval + wasm-unsafe-val | w/ SRI ok | w/o SRI bad
---- | --- | --- | --- | -- | -- | --
-new WebAssembly.Module | allow | allow if from instantiateCompile | allow | allow | allow if from instantiateCompile | disallow if from instantiateCompile
-WebAssembly.compile | allow | disallow | allow | allow | N/A | N/A
-WebAssembly.compileStreaming | based on SRI | based on SRI | based on SRI | based on SRI | allow | disallow
-WebAssembly.instantiate | allow | allow if from instantiateCompile | allow | allow | allow if from instantiateCompile | disallow if from instantiateCompile
-WebAssembly.instantiateStreaming | based on SRI | based on SRI | based on SRI | based on SRI | allow | disallow
-WebAssembly.validate | allow | allow | allow | allow | allow | allow
-new WebAssembly.CompileError | allow | allow | allow | allow | allow | allow
-new WebAssembly.LinkError | allow | allow | allow | allow | allow | allow
-new WebAssembly.Table | allow | allow | allow | allow | allow | allow
-new WebAssembly.Memory | allow | allow | allow | allow | allow | allow
+Operation | default | no unsafe-eval | with wasm-unsafe-eval | with unsafe-eval and wasm-unsafe-val 
+--- | --- | --- | --- | ---
+JavaScript eval                                  | allow | SRI-hash | SRI-hash | allow
+new WebAssembly.Module(bytes)                    | allow | SRI-hash | allow | allow 
+WebAssembly.compile(bytes)                       | allow | SRI-hash | allow | allow 
+WebAssembly.instantiate(bytes, ...)              | allow | SRI-hash | allow | allow 
+WebAssembly.instantiate(module, ...)             | allow | allow | allow | allow 
+WebAssembly.compileStreaming(Response)           | allow | script-src | script-src | script-src 
+WebAssembly.instantiateStreaming(Response, ...)  | allow | script-src | script-src | script-src
+WebAssembly.validate(bytes)                      | allow | allow | allow | allow 
+new WebAssembly.Instance(module)                 | allow | allow | allow | allow 
+new WebAssembly.CompileError                     | allow | allow | allow | allow 
+new WebAssembly.LinkError                        | allow | allow | allow | allow 
+new WebAssembly.Table                            | allow | allow | allow | allow 
+new WebAssembly.Memory                           | allow | allow | allow | allow 
 
+Where SRI-hash means applying sub-resource-integrity checks based on the hash of the supplied bytes,
+rejecting the operation if the hash does not match whitelisted hashes,
+and script-src means rejecting operations that are not allowed by the CSP
+policy's directives for the source of scripts, e.g. script-src restricting origins.
+Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`.
 ### Examples
 
 ```
