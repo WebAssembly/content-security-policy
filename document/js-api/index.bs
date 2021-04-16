@@ -303,6 +303,7 @@ A {{Module}} object represents a single WebAssembly module. Each {{Module}} obje
 <div algorithm>
     The <dfn method for="WebAssembly">compile(bytes)</dfn> method, when invoked, performs the following steps:
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
+    1. Perform [$HostEnsureCanCompileWasmBytes(bytes)|HostEnsureCanCompileWasmBytes(stableBytes)$]
     1. Let |promise| be [=a new promise=].
     1. [=Asynchronously compile a WebAssembly module=] from |stableBytes| with |promise|.
     1. Return |promise|.
@@ -409,6 +410,7 @@ A {{Module}} object represents a single WebAssembly module. Each {{Module}} obje
 <div algorithm>
   The <dfn method for="WebAssembly">instantiate(bytes, importObject)</dfn> method, when invoked, performs the following steps:
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
+    1. Perform [$HostEnsureCanCompileWasmBytes(bytes)|HostEnsureCanCompileWasmBytes(stableBytes)$]
     1. Let |promiseOfModule| be [=a new promise=].
     1. [=Asynchronously compile a WebAssembly module=] from |stableBytes| with |promiseOfModule|.
     1. [=Instantiate a promise of a module|Instantiate=] |promiseOfModule| with imports |importObject| and return the result.
@@ -501,6 +503,7 @@ interface Module {
     The <dfn constructor for="Module">Module(bytes)</dfn> constructor, when invoked, performs the follwing steps:
 
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
+    1. Perform [$HostEnsureCanCompileWasmBytes(bytes)|HostEnsureCanCompileWasmBytes(stableBytes)$]
     1. [=Compile a WebAssembly module|Compile the WebAssembly module=] |stableBytes| and store the result as |module|.
     1. If |module| is [=error=], throw a {{CompileError}} exception.
     1. [=Construct a WebAssembly module object=] from |module| and |bytes|, and return the result.
@@ -875,3 +878,16 @@ same class of exception is thrown as for out of memory conditions in JavaScript.
 The particular exception here is implementation-defined in both cases.
 
 Note: ECMAScript doesn't specify any sort of behavior on out-of-memory conditions; implementations have been observed to throw OOMError and to crash. Either is valid here.
+
+<h2>Implementation-defined Operations</h2>
+
+<h3 id="host-ensure-can-compile-wasm-bytes">HostEnsureCanCompileWasmBytes(bytes)</h3>
+
+<dfn abstract-op>HostEnsureCanCompileWasmBytes(bytes)</dfn> is an implementation-defined abstract operation
+that allows host environments to block certain WebAssembly functions which
+compile bytes into WebAssembly code.
+
+An implementation of HostEnsureCanCompileWasmBytes may complete normally or
+abruptly. Any abrupt completions will be propagated to its callers. The default
+implementation of HostEnsureCanCompileWasmBytes is to unconditionally return an
+empty normal completion.
