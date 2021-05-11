@@ -15,7 +15,7 @@ By imposing this sandbox on the execution of a WebAssembly model, the browser (o
 This does not, however, provide any guarantees that WebAssembly modules compute correct results: it is still possible that an incorrectly programmed module may corrupt data, produce invalid results and be subject to attacks such as SQL injection and even buffer overrun affecting data structures within an application. Since the memory used by a WebAssembly module may be shared via ArrayBuffers these faults may be visible to and affect other WebAssembly and JavaScript modules that also share the same memory. Other memory faults - such as use-after-free and accessing uninitialized memory - are also similarly not protected against by the engine. 
 
 We should also note that a malicious module may be completely safe in terms of the resources from the host that it uses and still cause significant harm to the user. A classic example of this would be a surruptiously loaded crypto-mining WebAssembly module.
-a
+
 In addition, the sandbox model does not manage _which_ WebAssembly modules are executed. Controlling which WebAssembly modules are executed is the primary focus of CSP.
 
 ### CSP Resource Control
