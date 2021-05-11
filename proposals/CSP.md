@@ -27,7 +27,7 @@ It is important to manage this as malicious WebAssembly modules could exfiltrate
 incorrect information. Fetching resources leaks information about the user to
 untrusted third parties.
 
-Viewed in terms of _trust_ modeling, the CSP allows the content publisher to establish a trust contract with the browser -- and therefore be willing to let the browser execute the publisher's code. It does not, however, address the trust that a user must express when accessing functionality from a WebAssembly module. This is crucially important; however, it is also beyond the scope of this note.
+Viewed in terms of _trust_ modeling, CSP allows the content publisher to establish a trust contract with the browser -- and therefore be willing to let the browser execute the publisher's code. It does not, however, address the trust that a user must express when accessing functionality from a WebAssembly module. This is crucially important; however, it is also beyond the scope of this note.
 
 ### WebAssembly Execution API
 
