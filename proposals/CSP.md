@@ -116,7 +116,7 @@ _Risks:_ equivalent to `WebAssembly.instantiate`.
 
 ## WebAssembly and CSP
 
-As noted earlier, CSP allows publishers to control what resources are loaded into a browser from a Web application. This includes resources that are dynamically created as well as those loaded directly. There is no direct equivalent of a `script` element tag for WebAssembly modules; although it is possible that such an feature may be specified in the future. Instead, WebAssembly modules are compiled and instantiated via a JavaScript API. Thus our focus on CSP for WebAssembly is on that API.
+As noted earlier, CSP allows publishers to control what resources are loaded into a browser from a Web application. This includes resources that are dynamically created as well as those loaded directly. There is no direct equivalent of a `script` element for WebAssembly modules; although it is possible that such an feature may be specified in the future. Instead, WebAssembly modules are compiled and instantiated via a JavaScript API. Thus our focus on CSP for WebAssembly is on that API.
 
 ### The `HostEnsureCanCompileWasmBytes` Policy Point
 
