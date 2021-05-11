@@ -124,7 +124,7 @@ It is proposed that the above APIs are _gated_ by a policy point: `HostEnsureCan
 
 #### `HostEnsureCanCompileWasmBytes`
 
-If `HostEnsureCanCompileWasmBytes` is not enabled, then the `WebAssembly.compile` and `WebAssembly.compileStreaming` functions fail with a `WebAssembly.EvalError??` exception. Otherwise, these API functions return results depending on the internal integrity of the WebAssembly module being compiled.
+If `HostEnsureCanCompileWasmBytes` is not enabled, then the `WebAssembly.compile` and `WebAssembly.compileStreaming` functions fail with a `WebAssembly.CompileError` exception. Otherwise, these API functions return results depending on the internal integrity of the WebAssembly module being compiled.
 
 ### The `wasm-unsafe-eval` source directive
 
@@ -158,15 +158,15 @@ and script-src means rejecting operations that are not allowed by the CSP
 policy's directives for the source of scripts, e.g. script-src restricting origins.
 Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`.
 
-On the event of failure, then an `EvalError` should be thrown by the appropriate JavaScript operation.
+On the event of failure, then an `CompileError` should be thrown by the appropriate JavaScript operation.
 
 #### Examples
 
 ```
 Content-Security-Policy: script-src 'self';
 
-WebAssembly.compileStreaming(fetch('/foo.wasm'));  // OK
-WebAssembly.instantiateStreaming(fetch('/foo.wasm')); // OK
+WebAssembly.compileStreaming(fetch('/foo.wasm'));  // BAD: wasm-unsafe-eval compile error
+WebAssembly.instantiateStreaming(fetch('/foo.wasm')); // BAD: wasm-unsafe-eval compile error
 WebAssembly.compileStreaming(fetch('/foo.js'));  // BAD: mime type
 WebAssembly.instantiateStreaming(fetch('/foo.js')); // BAD: mime type
 WebAssembly.compileStreaming(fetch('http://yo.com/foo.wasm'));  // BAD: cross origin
@@ -174,15 +174,8 @@ WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // BAD: cross
 ```
 
 ```
-Content-Security-Policy: script-src http://yo.com;
+Content-Security-Policy: script-src http://yo.com 'wasm-unsafe-eval';
 
 WebAssembly.compileStreaming(fetch('http://yo.com/foo.wasm'));  // OK
 WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // OK
-```
-
-```
-Content-Security-Policy: script-src 'sha256-123...456';
-
-WebAssembly.compileStreaming(fetch('http://baz.com/hash123..456.wasm'));  // OK
-WebAssembly.instantiateStreaming(fetch('http://baz.com/hash123..456.wasm')); // OK
 ```
