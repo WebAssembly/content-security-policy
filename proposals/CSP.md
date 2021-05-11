@@ -15,7 +15,7 @@ By imposing this sandbox on the execution of a WebAssembly model, the browser (o
 This does not, however, provide any guarantees that WebAssembly modules compute correct results: it is still possible that an incorrectly programmed module may corrupt data, produce invalid results and be subject to attacks such as SQL injection and even buffer overrun affecting data structures within an application. Since the memory used by a WebAssembly module may be shared via ArrayBuffers these faults may be visible to and affect other WebAssembly and JavaScript modules that also share the same memory. Other memory faults - such as use-after-free and accessing uninitialized memory - are also similarly not protected against by the engine. 
 
 We should also note that a malicious module may be completely safe in terms of the resources from the host that it uses and still cause significant harm to the user. A classic example of this would be a surruptiously loaded crypto-mining WebAssembly module.
-a
+
 In addition, the sandbox model does not manage _which_ WebAssembly modules are executed. Controlling which WebAssembly modules are executed is the primary focus of CSP.
 
 ### CSP Resource Control
@@ -126,17 +126,17 @@ It is proposed that the above APIs are _gated_ by a policy point: `HostEnsureCan
 
 If `HostEnsureCanCompileWasmBytes` is not enabled, then the `WebAssembly.compile` and `WebAssembly.compileStreaming` functions fail with a `WebAssembly.EvalError??` exception. Otherwise, these API functions return results depending on the internal integrity of the WebAssembly module being compiled.
 
-### The `wasm-eval` source directive
+### The `wasm-unsafe-eval` source directive
 
-We recommend that a new CSP policy directive `wasm-eval` be created. If set in the headers of a page, then the  `HostEnsureCanCompileWasmBytes` policy point is enabled; which, in turn, allows the page to load, compile and instantiate WebAssembly code. The details of these abstract operations will be incorporated into a future version of the CSP specification.
+We recommend that a new CSP policy directive `wasm-unsafe-eval` be created. If set in the headers of a page, then the  `HostEnsureCanCompileWasmBytes` policy point is enabled; which, in turn, allows the page to load, compile and instantiate WebAssembly code. The details of these abstract operations will be incorporated into a future version of the CSP specification.
 
-Given the current usage of the CSP policy `unsafe-eval` to gate both JavaScript `eval` and instantiating WebAssembly modules, we propose that that behavior be allowed to continue; but that `wasm-eval` should have no implication for JavaScript loading or evaluation or use of `eval` in JavaScript. NOTE: Providing a directive to allow JavaScript `eval` without WebAssembly doesn't seem immediately useful, and so has been left out intentionally.
+Given the current usage of the CSP policy `unsafe-eval` to gate both JavaScript `eval` and instantiating WebAssembly modules, we propose that that behavior be allowed to continue; but that `wasm-unsafe-eval` should have no implication for JavaScript loading or evaluation or use of `eval` in JavaScript. NOTE: Providing a directive to allow JavaScript `eval` without WebAssembly doesn't seem immediately useful, and so has been left out intentionally.
 
 ### Proposed Policy Behavior
 
 This table describes which operations should be allowed when there is a Content-Security-Policy specified:
 
-Operation | default | no unsafe-eval | with wasm-eval | with unsafe-eval and wasm-eval 
+Operation | default | no unsafe-eval | with wasm-unsafe-eval | with unsafe-eval and wasm-unsafe-eval 
 --- | --- | --- | --- | ---
 JavaScript eval                                  | allow | SRI-hash | SRI-hash | allow
 new WebAssembly.Module(bytes)                    | allow | SRI-hash | allow | allow 
@@ -156,7 +156,7 @@ Where SRI-hash means applying sub-resource-integrity checks based on the hash of
 rejecting the operation if the hash does not match whitelisted hashes,
 and script-src means rejecting operations that are not allowed by the CSP
 policy's directives for the source of scripts, e.g. script-src restricting origins.
-Note that `unsafe-eval` effectively *implies* `wasm-eval`.
+Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`.
 
 On the event of failure, then an `EvalError` should be thrown by the appropriate JavaScript operation.
 
