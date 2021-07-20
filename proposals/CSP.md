@@ -162,7 +162,7 @@ new WebAssembly.Memory                           | allow | allow | allow | allow
 
 Where script-src means rejecting operations that are not allowed by the CSP
 policy's directives for the source of scripts, e.g. script-src restricting origins.
-Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`.
+Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`; this is, in part, to ensure continued behavior from the current status where `unsafe-eval` is used in order to ensure execution of WebAssembly code. Similarly, apply regular `script-src` policy to WebAssembly is an extension of the existing semantics for `script-src` to a new domain (WebAssembly in addition to JavaScript execution).
 
 Note that some of these operations (`WebAssembly.instantiate(Module)` and `new WebAssembly.Instance(module)`) are effectively gated by the requirement to construct modules, i.e., these operations are dependent on whether `WebAssembly.compile(bytes)` or `WebAssembly.compileStreaming(Response)` are allowed.
 
