@@ -132,19 +132,27 @@ We recommend that a new CSP policy directive `wasm-unsafe-eval` be created. If s
 
 Given the current usage of the CSP policy `unsafe-eval` to gate both JavaScript `eval` and instantiating WebAssembly modules, we propose that that behavior be allowed to continue; but that `wasm-unsafe-eval` should have no implication for JavaScript loading or evaluation or use of `eval` in JavaScript. NOTE: Providing a directive to allow JavaScript `eval` without WebAssembly doesn't seem immediately useful, and so has been left out intentionally.
 
+### Using existing CSP script-src policies
+
+While `WebAssembly.compile` and `WebAssembly.instantiate` take arrays of bytes to produce executable code, `WebAssembly.compileStreaming` and `WebAssembly.intantiateStreaming` depend on a `Response` object. One characteristic of the `Response` object is that it has access to the URL of the original request.
+
+We recommend that this URL may be vetted by the `script-src` CSP policy associated with the _container_ (typically either an IFrame or the page executing the JavaScript call to `compileStreaming` or `instantiateStreaming` APIs). 
+
+In effect, the policy would be that if a source URL is permitted by the `script-src` CSP policy then a WebAssembly module loaded from that source (via a streaming API) would be permitted to execute _without any additional CSP policy tokens_. 
+
 ### Proposed Policy Behavior
 
 This table describes which operations should be allowed when there is a Content-Security-Policy specified:
 
-Operation | default | no unsafe-eval | with wasm-unsafe-eval | with unsafe-eval and wasm-unsafe-eval 
+Operation | default | with unsafe-eval | with wasm-unsafe-eval | with active script-src policy 
 --- | --- | --- | --- | ---
-JavaScript eval                                  | allow | SRI-hash | SRI-hash | allow
-new WebAssembly.Module(bytes)                    | allow | SRI-hash | allow | allow 
-WebAssembly.compile(bytes)                       | allow | SRI-hash | allow | allow 
-WebAssembly.instantiate(bytes, ...)              | allow | SRI-hash | allow | allow 
+JavaScript eval                                  | allow | allow | not allowed | script-src
+new WebAssembly.Module(bytes)                    | allow | allow | allow | not allowed 
+WebAssembly.compile(bytes)                       | allow | allow | allow | not allowed 
+WebAssembly.instantiate(bytes, ...)              | allow | allow | allow | not allowed 
 WebAssembly.instantiate(module, ...)             | allow | allow | allow | allow 
-WebAssembly.compileStreaming(Response)           | allow | script-src | script-src | script-src 
-WebAssembly.instantiateStreaming(Response, ...)  | allow | script-src | script-src | script-src
+WebAssembly.compileStreaming(Response)           | allow | allow | allow | script-src 
+WebAssembly.instantiateStreaming(Response, ...)  | allow | allow | allow | script-src
 WebAssembly.validate(bytes)                      | allow | allow | allow | allow 
 new WebAssembly.Instance(module)                 | allow | allow | allow | allow 
 new WebAssembly.CompileError                     | allow | allow | allow | allow 
@@ -152,11 +160,11 @@ new WebAssembly.LinkError                        | allow | allow | allow | allow
 new WebAssembly.Table                            | allow | allow | allow | allow 
 new WebAssembly.Memory                           | allow | allow | allow | allow 
 
-Where SRI-hash means applying sub-resource-integrity checks based on the hash of the supplied bytes,
-rejecting the operation if the hash does not match whitelisted hashes,
-and script-src means rejecting operations that are not allowed by the CSP
+Where script-src means rejecting operations that are not allowed by the CSP
 policy's directives for the source of scripts, e.g. script-src restricting origins.
 Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`.
+
+Note that some of these operations (`WebAssembly.instantiate(Module)` and `new WebAssembly.Instance(module)`) are effectively gated by the requirement to construct modules, i.e., these operations are dependent on whether `WebAssembly.compile(bytes)` or `WebAssembly.compileStreaming(Response)` are allowed.
 
 On the event of failure, then a `CompileError` should be thrown by the appropriate JavaScript operation.
 
@@ -174,7 +182,14 @@ WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // BAD: cross
 ```
 
 ```
-Content-Security-Policy: script-src http://yo.com 'wasm-unsafe-eval';
+Content-Security-Policy: script-src 'wasm-unsafe-eval';
+
+WebAssembly.compileStreaming(fetch('http://example.com/foo.wasm'));  // OK
+WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // OK
+```
+
+```
+Content-Security-Policy: script-src http://yo.com;
 
 WebAssembly.compileStreaming(fetch('http://yo.com/foo.wasm'));  // OK
 WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // OK
