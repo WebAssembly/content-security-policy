@@ -93,13 +93,15 @@ The <dfn method for="WebAssembly">instantiateStreaming(source, importObject)</df
 <div algorithm>
 To <dfn>compile a potential WebAssembly response</dfn> with a promise of a {{Response}} |source|, perform the following steps:
 
-Note: This algorithm accepts a {{Response}} object, or a
-    promise for one, and compiles and instantiates the resulting bytes of the response. This compilation
-    can be performed in the background and in a streaming manner. If the {{Response}} is not
-    [=CORS-same-origin=], does not represent an [=ok status=], or does not match the
-    `` `application/wasm` `` MIME type, the returned promise will be rejected with a {{TypeError}}; if
-    compilation or instantiation fails, the returned promise will be rejected with a
-    {{CompileError}} or other relevant error type, depending on the cause of failure.
+Note: This algorithm accepts a {{Response}} object, or a promise for one, and
+    compiles and instantiates the resulting bytes of the response. This
+    compilation can be performed in the background and in a streaming manner. If
+    the {{Response}} is not [=CORS-same-origin=], does not represent an [=ok
+    status=], does not comply with CSP `script-src` policy, or does not match
+    the `` `application/wasm` `` MIME type, the returned promise will be
+    rejected with a {{TypeError}}; if compilation or instantiation fails, the
+    returned promise will be rejected with a {{CompileError}} or other relevant
+    error type, depending on the cause of failure.
 
 
     1. Let |returnValue| be [=a new promise=]
@@ -111,6 +113,7 @@ Note: This algorithm accepts a {{Response}} object, or a
         Note: extra parameters are not allowed, including the empty `` `application/wasm;` ``.
 
         4. If |response| is not [=CORS-same-origin=], [=reject=] |returnValue| with a {{TypeError}} and abort these substeps.
+        1. If |response|'s [=url=] does not 
         1. If |response|'s [=response/status=] is not an [=ok status=], [=reject=] |returnValue| with a {{TypeError}} and abort these substeps.
         1. Perform [$HostEnsureCanCompileWasmResponse(response)$]
         1. [=Consume body|consume=] |response|'s body as an {{ArrayBuffer}}, and let |bodyPromise| be the result.
