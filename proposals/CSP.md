@@ -134,7 +134,7 @@ Given the current usage of the CSP policy `unsafe-eval` to gate both JavaScript 
 
 ### Using existing CSP script-src policies
 
-While `WebAssembly.compile` and `WebAssembly.instantiate` take arrays of bytes to produce executable code, `WebAssembly.compileStreaming` and `WebAssembly.intantiateStreaming` depend on a `Response` object. One characteristic of the `Response` object is that it has access to the URL of the original request.
+While `WebAssembly.compile` and `WebAssembly.instantiate` take arrays of bytes to produce executable code, `WebAssembly.compileStreaming` and `WebAssembly.intantiateStreaming` take a `Response` object. One characteristic of the `Response` object is that it has access to the URL of the original request.
 
 We recommend that this URL may be vetted by the `script-src` CSP policy associated with the _container_ (typically the page executing the JavaScript call to `compileStreaming` or `instantiateStreaming` APIs). 
 
