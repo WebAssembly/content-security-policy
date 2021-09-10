@@ -146,7 +146,7 @@ On the event of failure, then a `CompileError` should be thrown by the `WebAssem
 
 ### Using existing CSP script-src policies
 
-Currently, WebAssembly modules are anomolous within the Web platform because there is no specific HTML element tag that references WebAssembly modules. It is reasonable to suggest that the existing `script` tag may one day be extended to also include WebAssembly modules. In that event, it is also reasonable to consider the use of the CSP `script-src` source keyword to include WebAssembly as well as JavaScript.
+Currently, WebAssembly modules are anomolous within the Web platform because there is no specific HTML element that references WebAssembly modules. It is reasonable to suggest that the existing `script` element may one day be extended to also include WebAssembly modules. In that event, it is also reasonable to consider the use of the CSP `script-src` source keyword to include WebAssembly as well as JavaScript.
 
 However, it would not be wise to extend the scope of CSP's `script-src` source in this way. The reasons for this are that it could break existing websites and that the specific rules for `script-src` are too tailored to the requirements of JavaScript.
 
