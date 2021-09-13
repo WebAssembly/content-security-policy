@@ -132,65 +132,26 @@ We recommend that a new CSP policy directive `wasm-unsafe-eval` be created. If s
 
 Given the current usage of the CSP policy `unsafe-eval` to gate both JavaScript `eval` and instantiating WebAssembly modules, we propose that that behavior be allowed to continue; but that `wasm-unsafe-eval` should have no implication for JavaScript loading or evaluation or use of `eval` in JavaScript. NOTE: Providing a directive to allow JavaScript `eval` without WebAssembly doesn't seem immediately useful, and so has been left out intentionally.
 
+#### Proposed Policy Behavior
+
+With the `wasm-unsafe-eval` source, there are two options for managing WebAssembly execution: `unsafe-eval` and `wasm-unsafe-eval`. The former is primarily intended to govern JavaScript execution -- specifically those JS features that can be used to construct programs from text. However, it has been extended to allow WebAssembly execution. The second is a more targeted source keyword that only applies to WebAssembly.
+
+* If the `unsafe-eval` source keyword is used, then this overrides any occurence of `wasm-unsafe-eval` in the CSP policy. 
+
+* If the `wasm-unsafe-eval` source keyword is used, and the `unsafe-eval` keyword is not present, then WebAssembly modules may be compiled and instantiated.
+
+  One advantage of this is that a website can permit WebAssembly modules to be used without also enabling JavaScript's `eval` keyword.
+
+On the event of failure, then a `CompileError` should be thrown by the `WebAssembly.compile` and related API calls.
+
 ### Using existing CSP script-src policies
 
-While `WebAssembly.compile` and `WebAssembly.instantiate` take arrays of bytes to produce executable code, `WebAssembly.compileStreaming` and `WebAssembly.intantiateStreaming` take a `Response` object. One characteristic of the `Response` object is that it has access to the URL of the original request.
+Currently, WebAssembly modules are anomolous within the Web platform because there is no specific HTML element that references WebAssembly modules. It is reasonable to suggest that the existing `script` element may one day be extended to also include WebAssembly modules. In that event, it is also reasonable to consider the use of the CSP `script-src` source keyword to include WebAssembly as well as JavaScript.
 
-We recommend that this URL may be vetted by the `script-src` CSP policy associated with the _container_ (typically the page executing the JavaScript call to `compileStreaming` or `instantiateStreaming` APIs). 
+However, it would not be wise to extend the scope of CSP's `script-src` source in this way. The reasons for this are that it could break existing websites and that the specific rules for `script-src` are too tailored to the requirements of JavaScript.
 
-In effect, the policy would be that if a source URL is permitted by the `script-src` CSP policy then a WebAssembly module loaded from that source (via a streaming API) would be permitted to execute _without any additional CSP policy tokens_. 
+* Extending `script-src` to include WebAssembly has the potential to compromise a website that currently uses a CSP policy for JavaScript that was not intended to support WebAssembly.
 
-### Proposed Policy Behavior
+* Using a _white list_ approach for allowable domains to source executable can be shown to be difficult to manage in practice. This is especially true for JavaScript, but is also true for WebAssembly. 
 
-This table describes which operations should be allowed when there is a Content-Security-Policy specified:
-
-Operation | default | with unsafe-eval | with wasm-unsafe-eval | with active script-src policy 
---- | --- | --- | --- | ---
-JavaScript eval                                  | allow | allow | not allowed | script-src
-new WebAssembly.Module(bytes)                    | allow | allow | allow | not allowed 
-WebAssembly.compile(bytes)                       | allow | allow | allow | not allowed 
-WebAssembly.instantiate(bytes, ...)              | allow | allow | allow | not allowed 
-WebAssembly.instantiate(module, ...)             | allow | allow | allow | allow 
-WebAssembly.compileStreaming(Response)           | allow | allow | allow | script-src 
-WebAssembly.instantiateStreaming(Response, ...)  | allow | allow | allow | script-src
-WebAssembly.validate(bytes)                      | allow | allow | allow | allow 
-new WebAssembly.Instance(module)                 | allow | allow | allow | allow 
-new WebAssembly.CompileError                     | allow | allow | allow | allow 
-new WebAssembly.LinkError                        | allow | allow | allow | allow 
-new WebAssembly.Table                            | allow | allow | allow | allow 
-new WebAssembly.Memory                           | allow | allow | allow | allow 
-
-Where script-src means rejecting operations that are not allowed by the CSP
-policy's directives for the source of scripts, e.g. script-src restricting origins.
-Note that `unsafe-eval` effectively *implies* `wasm-unsafe-eval`; this is, in part, to ensure continued behavior from the current status where `unsafe-eval` is used in order to ensure execution of WebAssembly code. Similarly, applying regular `script-src` policy to WebAssembly is an extension of the existing semantics for `script-src` to a new domain (WebAssembly in addition to JavaScript execution).
-
-Note that some of these operations (`WebAssembly.instantiate(Module)` and `new WebAssembly.Instance(module)`) are effectively gated by the requirement to construct modules, i.e., these operations are dependent on whether `WebAssembly.compile(bytes)` or `WebAssembly.compileStreaming(Response)` are allowed.
-
-On the event of failure, then a `CompileError` should be thrown by the appropriate JavaScript operation.
-
-#### Examples
-
-```
-Content-Security-Policy: script-src 'self';
-
-WebAssembly.compileStreaming(fetch('/foo.wasm'));  // BAD: wasm-unsafe-eval compile error
-WebAssembly.instantiateStreaming(fetch('/foo.wasm')); // BAD: wasm-unsafe-eval compile error
-WebAssembly.compileStreaming(fetch('/foo.js'));  // BAD: mime type
-WebAssembly.instantiateStreaming(fetch('/foo.js')); // BAD: mime type
-WebAssembly.compileStreaming(fetch('http://yo.com/foo.wasm'));  // BAD: cross origin
-WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // BAD: cross origin
-```
-
-```
-Content-Security-Policy: script-src 'wasm-unsafe-eval';
-
-WebAssembly.compileStreaming(fetch('http://example.com/foo.wasm'));  // OK
-WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // OK
-```
-
-```
-Content-Security-Policy: script-src http://yo.com;
-
-WebAssembly.compileStreaming(fetch('http://yo.com/foo.wasm'));  // OK
-WebAssembly.instantiateStreaming(fetch('http://yo.com/foo.wasm')); // OK
-```
+  * The primary issue with white listing a domain is that it allows _all_ code from that domain. However, many domains -- such as CDNs -- host many code modules; many more than owners of websites can reasonably be aware of.
