@@ -128,7 +128,7 @@ If `HostEnsureCanCompileWasmBytes` is not enabled, then the `WebAssembly.compile
 
 ### The `wasm-unsafe-eval` source directive
 
-We recommend that a new CSP policy directive `wasm-unsafe-eval` be created. If set in the headers of a page, then the  `HostEnsureCanCompileWasmBytes` policy point is enabled; which, in turn, allows the page to load, compile and instantiate WebAssembly code. The details of these abstract operations will be incorporated into a future version of the CSP specification.
+We recommend that a new CSP policy directive `wasm-unsafe-eval` be created. If set in the headers of a page, then the  `HostEnsureCanCompileWasmBytes` policy point is enabled; which, in turn, allows the page to load, compile and instantiate WebAssembly code. This would apply to both the inline APIs (`WebAssembly.compile` etc.) and the streaming APIs (`WebAssembly.compileStreaming` et el.) The details of these abstract operations will be incorporated into a future version of the CSP specification.
 
 Given the current usage of the CSP policy `unsafe-eval` to gate both JavaScript `eval` and instantiating WebAssembly modules, we propose that that behavior be allowed to continue; but that `wasm-unsafe-eval` should have no implication for JavaScript loading or evaluation or use of `eval` in JavaScript. NOTE: Providing a directive to allow JavaScript `eval` without WebAssembly doesn't seem immediately useful, and so has been left out intentionally.
 
