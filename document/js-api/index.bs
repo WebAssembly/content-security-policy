@@ -303,7 +303,7 @@ A {{Module}} object represents a single WebAssembly module. Each {{Module}} obje
 <div algorithm>
     The <dfn method for="WebAssembly">compile(bytes)</dfn> method, when invoked, performs the following steps:
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
-    1. Perform [$HostEnsureCanCompileWasmBytes(bytes)|HostEnsureCanCompileWasmBytes(stableBytes)$]
+    1. Perform [$HostEnsureCanCompileWasmBytes()|HostEnsureCanCompileWasmBytes()$]
     1. Let |promise| be [=a new promise=].
     1. [=Asynchronously compile a WebAssembly module=] from |stableBytes| with |promise|.
     1. Return |promise|.
