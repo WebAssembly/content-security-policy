@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/WebAssembly/spec.svg?branch=master)](https://travis-ci.org/WebAssembly/spec)
+![Build Status](https://github.com/WebAssembly/spec/actions/workflows/main.yml/badge.svg)
 
 # Content Security Policy Proposal for WebAssembly
 
@@ -26,3 +26,7 @@ should take place in
 [the WebAssembly design repository](https://github.com/WebAssembly/design)
 first, so that this spec repository can remain focused. And please follow the
 [guidelines for contributing](Contributing.md).
+
+# citing
+
+For citing WebAssembly in LaTeX, use [this bibtex file](wasm-specs.bib).
