@@ -94,7 +94,7 @@ Floating-Point
 *Floating-point* data represents 32 or 64 bit values that correspond to the respective binary formats of the |IEEE754|_ standard (Section 3.3).
 
 Every value has a *sign* and a *magnitude*.
-Magnitudes can either be expressed as *normal* numbers of the form :math:`m_0.m_1m_2\dots m_M \cdot2^e`, where :math:`e` is the exponent and :math:`m` is the *significand* whose most signifcant bit :math:`m_0` is :math:`1`,
+Magnitudes can either be expressed as *normal* numbers of the form :math:`m_0.m_1m_2\dots m_M \cdot2^e`, where :math:`e` is the exponent and :math:`m` is the *significand* whose most significant bit :math:`m_0` is :math:`1`,
 or as a *subnormal* number where the exponent is fixed to the smallest possible value and :math:`m_0` is :math:`0`; among the subnormals are positive and negative zero values.
 Since the significands are binary values, normals are represented in the form :math:`(1 + m\cdot 2^{-M}) \cdot 2^e`, where :math:`M` is the bit width of :math:`m`; similarly for subnormals.
 
@@ -146,30 +146,30 @@ Conventions
 * The meta variable :math:`z` ranges over floating-point values where clear from context.
 
 
-.. index:: ! name, byte, Unicode, UTF-8, code point, binary format
+.. index:: ! name, byte, Unicode, UTF-8, character, binary format
    pair: abstract syntax; name
-.. _syntax-codepoint:
+.. _syntax-char:
 .. _syntax-name:
 
 Names
 ~~~~~
 
-*Names* are sequences of scalar *code points* as defined by |Unicode|_ (Section 2.4).
+*Names* are sequences of *characters*, which are *scalar values* as defined by |Unicode|_ (Section 2.4).
 
 .. math::
    \begin{array}{llclll}
    \production{name} & \name &::=&
-     \codepoint^\ast \qquad\qquad (\iff |\utf8(\codepoint^\ast)| < 2^{32}) \\
-   \production{code point} & \codepoint &::=&
+     \char^\ast \qquad\qquad (\iff |\utf8(\char^\ast)| < 2^{32}) \\
+   \production{character} & \char &::=&
      \unicode{00} ~|~ \dots ~|~ \unicode{D7FF} ~|~
      \unicode{E000} ~|~ \dots ~|~ \unicode{10FFFF} \\
    \end{array}
 
 Due to the limitations of the :ref:`binary format <binary-name>`,
-the lengths of a name is bounded by the length of its :ref:`UTF-8 <binary-utf8>` encoding.
+the length of a name is bounded by the length of its :ref:`UTF-8 <binary-utf8>` encoding.
 
 
 Convention
 ..........
 
-* Code points are sometimes used interchangeably with natural numbers :math:`n < 1114112`.
+* Characters (Unicode scalar values) are sometimes used interchangeably with natural numbers :math:`n < 1114112`.
