@@ -188,6 +188,10 @@ urlPrefix: https://webassembly.github.io/spec/core/; spec: WebAssembly; type: df
 urlPrefix: https://heycam.github.io/webidl/; spec: WebIDL
     type: dfn
         text: create a namespace object; url: create-a-namespace-object
+
+spec: webappsec-csp; urlPrefix: https://w3c.github.io/webappsec-csp/
+    type: method
+        text: EnsureCSPDoesNotBlockWasmByteCompilation; url: #can-compile-wasm-bytes
 </pre>
 
 <pre class='link-defaults'>
@@ -1159,7 +1163,6 @@ They expose the same interface as native JavaScript errors like {{TypeError}} an
 
 Note: It is not currently possible to define this behavior using Web IDL.
 
-
 <h2 id="errors">Error Condition Mappings to JavaScript</h2>
 
 Running WebAssembly programs encounter certain events which halt execution of the WebAssembly code.
@@ -1253,12 +1256,16 @@ empty normal completion.
 This algorithm maps the abstract operation HostEnsureCanCompileWasmBytes to the implementation
 {{EnsureCSPDoesNotBlockWasmByteCompilation}} defined as part of W3C's CSP specification:
 
-<div algorithm>
+<div algorithm="HostEnsureCanCompileWasmBytes">
 To verify that compiling WebAssembly is permitted, perform the following steps:
 
-1. Let |callerRealm| be the {{current Realm record}}
-1. Perform {{EnsureCSPDoesNotBlockWasmByteCompilation(|callerRealm|)}}
+ 1. Let |realm| be the [=current Realm=].
+ 1. Perform {{EnsureCSPDoesNotBlockWasmByteCompilation}}(|realm|)
 
+This algorithm does not return a value, but raises a {{CompileError}} exception if the operation 
+cannot complete successfully.
+
+</div>
 
 <h2 id="security-considerations">Security and Privacy Considerations</h2>
 
