@@ -308,6 +308,9 @@ Note:
 
 <div algorithm>
   To <dfn>compile a WebAssembly module</dfn> from source bytes |bytes|, perform the following steps:
+    1. Perform [$HostEnsureCanCompileWasmBytes()$]. 
+    
+       Note: This operation terminates with a {{CompileError}} exception if the operation is not permitted.
     1. Let |module| be [=module_decode=](|bytes|). If |module| is [=error=], return [=error=].
     1. If [=module_validate=](|module|) is [=error=], return [=error=].
     1. Return |module|.
@@ -1258,7 +1261,7 @@ In practice, an implementation may run out of resources for valid modules below 
 
 <h2 id="implementation-defined-operations">Implementation-defined Operations</h2>
 
-<h3 id="host-ensure-can-compile-wasm-bytes">HostEnsureCanCompileWasmBytes(s)</h3>
+<h3 id="host-ensure-can-compile-wasm-bytes">HostEnsureCanCompileWasmBytes()</h3>
 
 <dfn abstract-op>HostEnsureCanCompileWasmBytes()</dfn> is an implementation-defined abstract operation
 that allows host environments to block certain WebAssembly functions which

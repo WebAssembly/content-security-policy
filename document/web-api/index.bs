@@ -127,7 +127,10 @@ Note: This algorithm accepts a {{Response}} object, or a promise for one, and
 
         4. If |response| is not [=CORS-same-origin=], [=reject=] |returnValue| with a {{TypeError}} and abort these substeps.
         1. If |response|'s [=response/status=] is not an [=ok status=], [=reject=] |returnValue| with a {{TypeError}} and abort these substeps.
-        1. Perform [$HostEnsureCanCompileWasmBytes()$]
+        1. Perform [$HostEnsureCanCompileWasmBytes()$]. 
+        
+           Note: This operation terminates with a {{CompileError}} exception if the operation is not permitted.
+           
         1. [=Consume body|consume=] |response|'s body as an {{ArrayBuffer}}, and let |bodyPromise| be the result.
 
             Note: Although it is specified here that the response is consumed entirely before compilation proceeds, that is purely for ease of specification; implementations are likely to instead perform processing in a streaming fashion. The difference is unobservable, and thus the simpler model is specified. <!-- Using consume is a bit silly as it creates an ArrayBuffer but then we just want the underlying bytes. This is because of how streams is specced in terms of promises and JS objects whereas we want to operate more directly on the underlying concept. We can revisit this if things change in the Streams/Fetch specs. -->
