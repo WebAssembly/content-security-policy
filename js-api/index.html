@@ -5,8 +5,8 @@
   <title>WebAssembly JavaScript Interface</title>
   <meta content="ED" name="w3c-status">
   <meta content="Bikeshed version fb1e763a4, updated Tue Mar 1 13:13:50 2022 -0800" name="generator">
-  <link href="https://www.w3.org/TR/wasm-js-api-1/" rel="canonical">
-  <meta content="76c7781df7c20ad85cfc625ca604d07f04a5a11b" name="document-revision">
+  <link href="https://www.w3.org/TR/wasm-js-api-2/" rel="canonical">
+  <meta content="dd75e5ba3d31aa50cda1216e7ae15170c72ce7c7" name="document-revision">
 <style>
 emu-const {
     font-family: serif;
@@ -295,7 +295,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">WebAssembly JavaScript Interface</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2022-03-24">24 March 2022</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#ED">Editor’s Draft</a>, <time class="dt-updated" datetime="2022-04-18">18 April 2022</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -303,13 +303,13 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       <dt>This version:
       <dd><a class="u-url" href="https://webassembly.github.io/spec/js-api/">https://webassembly.github.io/spec/js-api/</a>
       <dt>Latest published version:
-      <dd><a href="https://www.w3.org/TR/wasm-js-api-1/">https://www.w3.org/TR/wasm-js-api-1/</a>
+      <dd><a href="https://www.w3.org/TR/wasm-js-api-2/">https://www.w3.org/TR/wasm-js-api-2/</a>
       <dt>Feedback:
       <dd><a href="#issues-index">Inline In Spec</a>
       <dt class="editor">Editor:
       <dd class="editor p-author h-card vcard"><span class="p-name fn">Ms2ger</span> (<span class="p-org org">Igalia</span>)
       <dt>Issue Tracking:
-      <dd><a href="https://github.com/WebAssembly/spec/labels/wasm-js-api-1">GitHub Issues</a>
+      <dd><a href="https://github.com/WebAssembly/spec/labels/wasm-js-api-2">GitHub Issues</a>
      </dl>
     </div>
    </details>
@@ -375,7 +375,7 @@ and the <a href="https://www.w3.org/TR/wasm-web-api/">WebAssembly Web API</a>.
     <li>
      <a href="#implementation-defined-operations"><span class="secno">7</span> <span class="content">Implementation-defined Operations</span></a>
      <ol class="toc">
-      <li><a href="#host-ensure-can-compile-wasm-bytes"><span class="secno">7.1</span> <span class="content">HostEnsureCanCompileWasmBytes(s)</span></a>
+      <li><a href="#host-ensure-can-compile-wasm-bytes"><span class="secno">7.1</span> <span class="content">HostEnsureCanCompileWasmBytes()</span></a>
      </ol>
     <li><a href="#security-considerations"><span class="secno">8</span> <span class="content">Security and Privacy Considerations</span></a>
     <li>
@@ -465,12 +465,18 @@ This mapping is used to ensure that, for a given <a data-link-type="dfn" href="h
     <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise①"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#dictdef-webassemblyinstantiatedsource" id="ref-for-dictdef-webassemblyinstantiatedsource"><c- n>WebAssemblyInstantiatedSource</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-webassembly-instantiate" id="ref-for-dom-webassembly-instantiate"><c- g>instantiate</c-></a>(
         <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#BufferSource" id="ref-for-BufferSource②"><c- n>BufferSource</c-></a> <dfn class="idl-code" data-dfn-for="WebAssembly/instantiate(bytes, importObject), WebAssembly/instantiate(bytes)" data-dfn-type="argument" data-export id="dom-webassembly-instantiate-bytes-importobject-bytes"><code><c- g>bytes</c-></code><a class="self-link" href="#dom-webassembly-instantiate-bytes-importobject-bytes"></a></dfn>, <c- b>optional</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-object" id="ref-for-idl-object"><c- b>object</c-></a> <dfn class="idl-code" data-dfn-for="WebAssembly/instantiate(bytes, importObject), WebAssembly/instantiate(bytes)" data-dfn-type="argument" data-export id="dom-webassembly-instantiate-bytes-importobject-importobject"><code><c- g>importObject</c-></code><a class="self-link" href="#dom-webassembly-instantiate-bytes-importobject-importobject"></a></dfn>);
 
+
     <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise" id="ref-for-idl-promise②"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#instance" id="ref-for-instance①"><c- n>Instance</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-webassembly-instantiate-moduleobject-importobject" id="ref-for-dom-webassembly-instantiate-moduleobject-importobject"><c- g>instantiate</c-></a>(
         <a data-link-type="idl-name" href="#module" id="ref-for-module②"><c- n>Module</c-></a> <dfn class="idl-code" data-dfn-for="WebAssembly/instantiate(moduleObject, importObject), WebAssembly/instantiate(moduleObject)" data-dfn-type="argument" data-export id="dom-webassembly-instantiate-moduleobject-importobject-moduleobject"><code><c- g>moduleObject</c-></code><a class="self-link" href="#dom-webassembly-instantiate-moduleobject-importobject-moduleobject"></a></dfn>, <c- b>optional</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-object" id="ref-for-idl-object①"><c- b>object</c-></a> <dfn class="idl-code" data-dfn-for="WebAssembly/instantiate(moduleObject, importObject), WebAssembly/instantiate(moduleObject)" data-dfn-type="argument" data-export id="dom-webassembly-instantiate-moduleobject-importobject-importobject"><code><c- g>importObject</c-></code><a class="self-link" href="#dom-webassembly-instantiate-moduleobject-importobject-importobject"></a></dfn>);
 };
 </pre>
    <div class="algorithm" data-algorithm="compile a WebAssembly module">
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="compile-a-webassembly-module">compile a WebAssembly module</dfn> from source bytes <var>bytes</var>, perform the following steps: 
+    <ol>
+     <li data-md>
+      <p>Perform <a data-link-type="abstract-op" href="#abstract-opdef-hostensurecancompilewasmbytes" id="ref-for-abstract-opdef-hostensurecancompilewasmbytes">HostEnsureCanCompileWasmBytes()</a>.</p>
+    </ol>
+    <p class="note" role="note"><span>Note:</span> This operation terminates with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror">CompileError</a></code> exception if the operation is not permitted.</p>
     <ol>
      <li data-md>
       <p>Let <var>module</var> be <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-module-decode" id="ref-for-embed-module-decode">module_decode</a>(<var>bytes</var>). If <var>module</var> is <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error">error</a>, return <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error①">error</a>.</p>
@@ -527,7 +533,7 @@ This mapping is used to ensure that, for a given <a data-link-type="dfn" href="h
         <p><a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task">Queue a task</a> to perform the following steps. If <var>taskSource</var> was provided, queue the task on that task source.</p>
         <ol>
          <li data-md>
-          <p>If <var>module</var> is <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error⑤">error</a>, reject <var>promise</var> with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror">CompileError</a></code> exception.</p>
+          <p>If <var>module</var> is <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error⑤">error</a>, reject <var>promise</var> with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror①">CompileError</a></code> exception.</p>
          <li data-md>
           <p>Otherwise,</p>
           <ol>
@@ -856,6 +862,8 @@ If this throws an exception, catch it, <a data-link-type="dfn" href="https://web
      <li data-md>
       <p>Let <var>stableBytes</var> be a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy" id="ref-for-dfn-get-buffer-source-copy②">copy of the bytes held by the buffer</a> <var>bytes</var>.</p>
      <li data-md>
+      <p>Perform <a data-link-type="abstract-op" href="#abstract-opdef-hostensurecancompilewasmbytes" id="ref-for-abstract-opdef-hostensurecancompilewasmbytes①">HostEnsureCanCompileWasmBytes()</a></p>
+     <li data-md>
       <p><a data-link-type="dfn" href="#asynchronously-compile-a-webassembly-module" id="ref-for-asynchronously-compile-a-webassembly-module①">Asynchronously compile a WebAssembly module</a> from <var>stableBytes</var> and let <var>promiseOfModule</var> be the result.</p>
      <li data-md>
       <p><a data-link-type="dfn" href="#instantiate-a-promise-of-a-module" id="ref-for-instantiate-a-promise-of-a-module">Instantiate</a> <var>promiseOfModule</var> with imports <var>importObject</var> and return the result.</p>
@@ -983,9 +991,11 @@ If this throws an exception, catch it, <a data-link-type="dfn" href="https://web
      <li data-md>
       <p>Let <var>stableBytes</var> be a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy" id="ref-for-dfn-get-buffer-source-copy③">copy of the bytes held by the buffer</a> <var>bytes</var>.</p>
      <li data-md>
+      <p>Perform <a data-link-type="abstract-op">HostEnsureCanCompileWasmBytes(stableBytes)</a></p>
+     <li data-md>
       <p><a data-link-type="dfn" href="#compile-a-webassembly-module" id="ref-for-compile-a-webassembly-module②">Compile the WebAssembly module</a> <var>stableBytes</var> and store the result as <var>module</var>.</p>
      <li data-md>
-      <p>If <var>module</var> is <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error⑧">error</a>, throw a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror①">CompileError</a></code> exception.</p>
+      <p>If <var>module</var> is <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error⑧">error</a>, throw a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror②">CompileError</a></code> exception.</p>
      <li data-md>
       <p>Set <strong>this</strong>.[[Module]] to <var>module</var>.</p>
      <li data-md>
@@ -1892,7 +1902,7 @@ This slot holds a <a data-link-type="dfn" href="https://webassembly.github.io/sp
       </ol>
     </ol>
    </div>
-   <p class="note" role="note"><span>Note:</span> This defines <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror②">CompileError</a></code>, <code class="idl"><a data-link-type="idl" href="#exceptiondef-linkerror" id="ref-for-exceptiondef-linkerror⑨">LinkError</a></code>, and <code class="idl"><a data-link-type="idl" href="#exceptiondef-runtimeerror" id="ref-for-exceptiondef-runtimeerror②">RuntimeError</a></code> classes on the <code class="idl"><a data-link-type="idl" href="#namespacedef-webassembly" id="ref-for-namespacedef-webassembly⑥">WebAssembly</a></code> namespace, which are produced by the APIs defined in this specification.
+   <p class="note" role="note"><span>Note:</span> This defines <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror③">CompileError</a></code>, <code class="idl"><a data-link-type="idl" href="#exceptiondef-linkerror" id="ref-for-exceptiondef-linkerror⑨">LinkError</a></code>, and <code class="idl"><a data-link-type="idl" href="#exceptiondef-runtimeerror" id="ref-for-exceptiondef-runtimeerror②">RuntimeError</a></code> classes on the <code class="idl"><a data-link-type="idl" href="#namespacedef-webassembly" id="ref-for-namespacedef-webassembly⑥">WebAssembly</a></code> namespace, which are produced by the APIs defined in this specification.
 They expose the same interface as native JavaScript errors like <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror①①">TypeError</a></code> and <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-rangeerror" id="ref-for-sec-native-error-types-used-in-this-standard-rangeerror⑧">RangeError</a></code>.</p>
    <p class="note" role="note"><span>Note:</span> It is not currently possible to define this behavior using Web IDL.</p>
    <h2 class="heading settled" data-level="5" id="errors"><span class="secno">5. </span><span class="content">Error Condition Mappings to JavaScript</span><a class="self-link" href="#errors"></a></h2>
@@ -1933,7 +1943,7 @@ The particular exception here is implementation-defined in both cases.</p>
    <h2 class="heading settled" data-level="6" id="limits"><span class="secno">6. </span><span class="content">Implementation-defined Limits</span><a class="self-link" href="#limits"></a></h2>
    <p>The WebAssembly core specification allows an implementation to define limits on the syntactic structure of the module.
 While each embedding of WebAssembly may choose to define its own limits, for predictability the standard WebAssembly JavaScript Interface described in this document defines the following exact limits.
-An implementation must reject a module that exceeds one of the following limits with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror③">CompileError</a></code>:
+An implementation must reject a module that exceeds one of the following limits with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror④">CompileError</a></code>:
 In practice, an implementation may run out of resources for valid modules below these limits.</p>
    <ul>
     <li>The maximum size of a module is 1073741824 bytes (1 GiB).
@@ -1959,8 +1969,8 @@ In practice, an implementation may run out of resources for valid modules below 
     <li>The maximum number of pages of a memory is 65536.
    </ul>
    <h2 class="heading settled" data-level="7" id="implementation-defined-operations"><span class="secno">7. </span><span class="content">Implementation-defined Operations</span><a class="self-link" href="#implementation-defined-operations"></a></h2>
-   <h3 class="heading settled" data-level="7.1" id="host-ensure-can-compile-wasm-bytes"><span class="secno">7.1. </span><span class="content">HostEnsureCanCompileWasmBytes(s)</span><a class="self-link" href="#host-ensure-can-compile-wasm-bytes"></a></h3>
-   <p><dfn data-dfn-type="abstract-op" data-export id="abstract-opdef-hostensurecancompilewasmbytes">HostEnsureCanCompileWasmBytes()<a class="self-link" href="#abstract-opdef-hostensurecancompilewasmbytes"></a></dfn> is an implementation-defined abstract operation
+   <h3 class="heading settled" data-level="7.1" id="host-ensure-can-compile-wasm-bytes"><span class="secno">7.1. </span><span class="content">HostEnsureCanCompileWasmBytes()</span><a class="self-link" href="#host-ensure-can-compile-wasm-bytes"></a></h3>
+   <p><dfn class="dfn-paneled" data-dfn-type="abstract-op" data-export id="abstract-opdef-hostensurecancompilewasmbytes">HostEnsureCanCompileWasmBytes()</dfn> is an implementation-defined abstract operation
 that allows host environments to block certain WebAssembly functions which
 compile bytes into WebAssembly code.</p>
    <p>An implementation of HostEnsureCanCompileWasmBytes may complete normally or
@@ -1976,7 +1986,7 @@ empty normal completion.</p>
      <li data-md>
       <p>Perform <code class="idl"><a data-link-type="idl" href="https://w3c.github.io/webappsec-csp/#can-compile-wasm-bytes" id="ref-for-can-compile-wasm-bytes①">EnsureCSPDoesNotBlockWasmByteCompilation</a></code>(<var>realm</var>)</p>
     </ol>
-    <p>This algorithm does not return a value, but raises a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror④">CompileError</a></code> exception if the operation
+    <p>This algorithm does not return a value, but raises a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror⑤">CompileError</a></code> exception if the operation
 cannot complete successfully.</p>
    </div>
    <h2 class="heading settled" data-level="8" id="security-considerations"><span class="secno">8. </span><span class="content">Security and Privacy Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
@@ -2284,7 +2294,7 @@ cannot complete successfully.</p>
    <a href="https://tc39.github.io/ecma262/#current-realm">https://tc39.github.io/ecma262/#current-realm</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-current-realm">4.6. Exported Functions</a>
-    <li><a href="#ref-for-current-realm①">7.1. HostEnsureCanCompileWasmBytes(s)</a>
+    <li><a href="#ref-for-current-realm①">7.1. HostEnsureCanCompileWasmBytes()</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-sec-data-blocks">
@@ -2518,7 +2528,7 @@ cannot complete successfully.</p>
   <aside class="dfn-panel" data-for="term-for-can-compile-wasm-bytes">
    <a href="https://w3c.github.io/webappsec-csp/#can-compile-wasm-bytes">https://w3c.github.io/webappsec-csp/#can-compile-wasm-bytes</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-can-compile-wasm-bytes">7.1. HostEnsureCanCompileWasmBytes(s)</a> <a href="#ref-for-can-compile-wasm-bytes①">(2)</a>
+    <li><a href="#ref-for-can-compile-wasm-bytes">7.1. HostEnsureCanCompileWasmBytes()</a> <a href="#ref-for-can-compile-wasm-bytes①">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-addresses">
@@ -3404,6 +3414,7 @@ cannot complete successfully.</p>
     <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#dictdef-webassemblyinstantiatedsource"><c- n>WebAssemblyInstantiatedSource</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-webassembly-instantiate"><c- g>instantiate</c-></a>(
         <a data-link-type="idl-name" href="https://webidl.spec.whatwg.org/#BufferSource"><c- n>BufferSource</c-></a> <a href="#dom-webassembly-instantiate-bytes-importobject-bytes"><code><c- g>bytes</c-></code></a>, <c- b>optional</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-object"><c- b>object</c-></a> <a href="#dom-webassembly-instantiate-bytes-importobject-importobject"><code><c- g>importObject</c-></code></a>);
 
+
     <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-promise"><c- b>Promise</c-></a>&lt;<a data-link-type="idl-name" href="#instance"><c- n>Instance</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-webassembly-instantiate-moduleobject-importobject"><c- g>instantiate</c-></a>(
         <a data-link-type="idl-name" href="#module"><c- n>Module</c-></a> <a href="#dom-webassembly-instantiate-moduleobject-importobject-moduleobject"><code><c- g>moduleObject</c-></code></a>, <c- b>optional</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-object"><c- b>object</c-></a> <a href="#dom-webassembly-instantiate-moduleobject-importobject-importobject"><code><c- g>importObject</c-></code></a>);
 };
@@ -4051,11 +4062,11 @@ cannot complete successfully.</p>
   <aside class="dfn-panel" data-for="exceptiondef-compileerror">
    <b><a href="#exceptiondef-compileerror">#exceptiondef-compileerror</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-exceptiondef-compileerror">4. The WebAssembly Namespace</a>
-    <li><a href="#ref-for-exceptiondef-compileerror①">4.1. Modules</a>
-    <li><a href="#ref-for-exceptiondef-compileerror②">4.7. Error Objects</a>
-    <li><a href="#ref-for-exceptiondef-compileerror③">6. Implementation-defined Limits</a>
-    <li><a href="#ref-for-exceptiondef-compileerror④">7.1. HostEnsureCanCompileWasmBytes(s)</a>
+    <li><a href="#ref-for-exceptiondef-compileerror">4. The WebAssembly Namespace</a> <a href="#ref-for-exceptiondef-compileerror①">(2)</a>
+    <li><a href="#ref-for-exceptiondef-compileerror②">4.1. Modules</a>
+    <li><a href="#ref-for-exceptiondef-compileerror③">4.7. Error Objects</a>
+    <li><a href="#ref-for-exceptiondef-compileerror④">6. Implementation-defined Limits</a>
+    <li><a href="#ref-for-exceptiondef-compileerror⑤">7.1. HostEnsureCanCompileWasmBytes()</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="exceptiondef-linkerror">
@@ -4073,6 +4084,12 @@ cannot complete successfully.</p>
     <li><a href="#ref-for-exceptiondef-runtimeerror①">4.6. Exported Functions</a>
     <li><a href="#ref-for-exceptiondef-runtimeerror②">4.7. Error Objects</a>
     <li><a href="#ref-for-exceptiondef-runtimeerror③">6. Implementation-defined Limits</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="abstract-opdef-hostensurecancompilewasmbytes">
+   <b><a href="#abstract-opdef-hostensurecancompilewasmbytes">#abstract-opdef-hostensurecancompilewasmbytes</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-abstract-opdef-hostensurecancompilewasmbytes">4. The WebAssembly Namespace</a> <a href="#ref-for-abstract-opdef-hostensurecancompilewasmbytes①">(2)</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
