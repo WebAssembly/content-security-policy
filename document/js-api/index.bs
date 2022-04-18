@@ -3,8 +3,8 @@ Title: WebAssembly JavaScript Interface
 Shortname: wasm-js-api
 Group: wasm
 Status: ED
-Level: 1
-TR: https://www.w3.org/TR/wasm-js-api-1/
+Level: 2
+TR: https://www.w3.org/TR/wasm-js-api-2/
 ED: https://webassembly.github.io/spec/js-api/
 Editor: Ms2ger, Igalia
 Repository: WebAssembly/spec
@@ -290,6 +290,7 @@ namespace WebAssembly {
     Promise&lt;WebAssemblyInstantiatedSource> instantiate(
         BufferSource bytes, optional object importObject);
 
+
     Promise&lt;Instance> instantiate(
         Module moduleObject, optional object importObject);
 };
@@ -307,6 +308,9 @@ Note:
 
 <div algorithm>
   To <dfn>compile a WebAssembly module</dfn> from source bytes |bytes|, perform the following steps:
+    1. Perform [$HostEnsureCanCompileWasmBytes()$]. 
+    
+       Note: This operation terminates with a {{CompileError}} exception if the operation is not permitted.
     1. Let |module| be [=module_decode=](|bytes|). If |module| is [=error=], return [=error=].
     1. If [=module_validate=](|module|) is [=error=], return [=error=].
     1. Return |module|.
@@ -504,6 +508,7 @@ The verification of WebAssembly type requirements is deferred to the
 <div algorithm>
   The <dfn method for="WebAssembly">instantiate(|bytes|, |importObject|)</dfn> method, when invoked, performs the following steps:
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
+    1. Perform [$HostEnsureCanCompileWasmBytes()$]
     1. [=Asynchronously compile a WebAssembly module=] from |stableBytes| and let |promiseOfModule| be the result.
     1. [=Instantiate a promise of a module|Instantiate=] |promiseOfModule| with imports |importObject| and return the result.
 </div>
@@ -592,6 +597,7 @@ interface Module {
     The <dfn constructor for="Module">Module(|bytes|)</dfn> constructor, when invoked, performs the follwing steps:
 
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
+    1. Perform [$HostEnsureCanCompileWasmBytes(bytes)|HostEnsureCanCompileWasmBytes(stableBytes)$]
     1. [=Compile a WebAssembly module|Compile the WebAssembly module=] |stableBytes| and store the result as |module|.
     1. If |module| is [=error=], throw a {{CompileError}} exception.
     1. Set **this**.\[[Module]] to |module|.
@@ -1242,7 +1248,7 @@ In practice, an implementation may run out of resources for valid modules below 
 
 <h2 id="implementation-defined-operations">Implementation-defined Operations</h2>
 
-<h3 id="host-ensure-can-compile-wasm-bytes">HostEnsureCanCompileWasmBytes(s)</h3>
+<h3 id="host-ensure-can-compile-wasm-bytes">HostEnsureCanCompileWasmBytes()</h3>
 
 <dfn abstract-op>HostEnsureCanCompileWasmBytes()</dfn> is an implementation-defined abstract operation
 that allows host environments to block certain WebAssembly functions which
