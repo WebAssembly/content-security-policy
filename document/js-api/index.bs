@@ -1787,9 +1787,9 @@ Note: ECMAScript doesn't specify any sort of behavior on out-of-memory condition
 
 <h2>Implementation-defined Operations</h2>
 
-<h3 id="host-ensure-can-compile-wasm-bytes">HostEnsureCanCompileWasmBytes(bytes)</h3>
+<h3 id="host-ensure-can-compile-wasm-bytes">HostEnsureCanCompileWasmBytes()</h3>
 
-<dfn abstract-op>HostEnsureCanCompileWasmBytes(bytes)</dfn> is an implementation-defined abstract operation
+<dfn abstract-op>HostEnsureCanCompileWasmBytes()</dfn> is an implementation-defined abstract operation
 that allows host environments to block certain WebAssembly functions which
 compile bytes into WebAssembly code.
 
