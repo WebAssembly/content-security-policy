@@ -27,6 +27,7 @@ function emit_a() {
 // the table entry is empty.
 
 function emit_b(insn, table) {
+    let tt = table == 2 ? 'i64' : 'i32';
     print(
 `
 (module
@@ -38,10 +39,11 @@ function emit_b(insn, table) {
   (import "a" "ef4" (func (result i32)))    ;; index 4
   (table $t0 30 30 funcref)
   (table $t1 30 30 funcref)
-  (elem (table $t${table}) (i32.const 2) func 3 1 4 1)
+  (table $t2 i64 30 30 funcref)
+  (elem (table $t${table}) (${tt}.const 2) func 3 1 4 1)
   (elem funcref
     (ref.func 2) (ref.func 7) (ref.func 1) (ref.func 8))
-  (elem (table $t${table}) (i32.const 12) func 7 5 2 3 6)
+  (elem (table $t${table}) (${tt}.const 12) func 7 5 2 3 6)
   (elem funcref
     (ref.func 5) (ref.func 9) (ref.func 2) (ref.func 7) (ref.func 6))
   (func (result i32) (i32.const 5))  ;; index 5
@@ -51,7 +53,7 @@ function emit_b(insn, table) {
   (func (result i32) (i32.const 9))  ;; index 9
   (func (export "test")
     ${insn})
-  (func (export "check") (param i32) (result i32)
+  (func (export "check") (param ${tt}) (result i32)
     (call_indirect $t${table} (type 0) (local.get 0)))
 )
 `);
@@ -65,12 +67,13 @@ function emit_b(insn, table) {
 function tab_test(instruction, table, expected_result_vector) {
     emit_b(instruction, table);
     print(`(invoke "test")`);
+    let tt = table == 2 ? 'i64' : 'i32';
     for (let i = 0; i < expected_result_vector.length; i++) {
         let expected = expected_result_vector[i];
         if (expected === undefined) {
-            print(`(assert_trap (invoke "check" (i32.const ${i})) "uninitialized element")`);
+            print(`(assert_trap (invoke "check" (${tt}.const ${i})) "uninitialized element")`);
         } else {
-            print(`(assert_return (invoke "check" (i32.const ${i})) (i32.const ${expected}))`);
+            print(`(assert_return (invoke "check" (${tt}.const ${i})) (i32.const ${expected}))`);
         }
     }
 }
@@ -81,28 +84,29 @@ emit_a();
 // to count through the vector entries when debugging.
 let e = undefined;
 
-for ( let table of [0, 1] ) {
+for ( let table of [0, 1, 2] ) {
+    let tt = table == 2 ? 'i64' : 'i32';
     // Passive init that overwrites all-null entries
-    tab_test(`(table.init $t${table} 1 (i32.const 7) (i32.const 0) (i32.const 4))`,
+    tab_test(`(table.init $t${table} 1 (${tt}.const 7) (i32.const 0) (i32.const 4))`,
              table,
              [e,e,3,1,4, 1,e,2,7,1, 8,e,7,5,2, 3,6,e,e,e, e,e,e,e,e, e,e,e,e,e]);
 
     // Passive init that overwrites existing active-init-created entries
-    tab_test(`(table.init $t${table} 3 (i32.const 15) (i32.const 1) (i32.const 3))`,
+    tab_test(`(table.init $t${table} 3 (${tt}.const 15) (i32.const 1) (i32.const 3))`,
              table,
              [e,e,3,1,4, 1,e,e,e,e, e,e,7,5,2, 9,2,7,e,e, e,e,e,e,e, e,e,e,e,e]);
 
     // Perform active and passive initialisation and then multiple copies
     tab_test(
-        `(table.init $t${table} 1 (i32.const 7) (i32.const 0) (i32.const 4))
+        `(table.init $t${table} 1 (${tt}.const 7) (i32.const 0) (i32.const 4))
          (elem.drop 1)
-         (table.init $t${table} 3 (i32.const 15) (i32.const 1) (i32.const 3))
+         (table.init $t${table} 3 (${tt}.const 15) (i32.const 1) (i32.const 3))
          (elem.drop 3)
-         (table.copy $t${table} ${table} (i32.const 20) (i32.const 15) (i32.const 5))
-         (table.copy $t${table} ${table} (i32.const 21) (i32.const 29) (i32.const 1))
-         (table.copy $t${table} ${table} (i32.const 24) (i32.const 10) (i32.const 1))
-         (table.copy $t${table} ${table} (i32.const 13) (i32.const 11) (i32.const 4))
-         (table.copy $t${table} ${table} (i32.const 19) (i32.const 20) (i32.const 5))`,
+         (table.copy $t${table} ${table} (${tt}.const 20) (${tt}.const 15) (${tt}.const 5))
+         (table.copy $t${table} ${table} (${tt}.const 21) (${tt}.const 29) (${tt}.const 1))
+         (table.copy $t${table} ${table} (${tt}.const 24) (${tt}.const 10) (${tt}.const 1))
+         (table.copy $t${table} ${table} (${tt}.const 13) (${tt}.const 11) (${tt}.const 4))
+         (table.copy $t${table} ${table} (${tt}.const 19) (${tt}.const 20) (${tt}.const 5))`,
         table,
         [e,e,3,1,4, 1,e,2,7,1, 8,e,7,e,7, 5,2,7,e,9, e,7,e,8,8, e,e,e,e,e]);
 }
@@ -113,7 +117,7 @@ print(
   (module
     (func (export "test")
       (elem.drop 0)))
-  "unknown table 0")
+  "unknown elem segment 0")
 `);
 
 // table.init requires a table, minimally
@@ -133,7 +137,7 @@ print(
     (func (result i32) (i32.const 0))
     (func (export "test")
       (elem.drop 4)))
-  "unknown table 0")
+  "unknown elem segment 4")
 `);
 
 // init with elem seg ix out of range
@@ -197,7 +201,7 @@ tab_test1("(elem.drop 2)", 0,
 
 // init with elem seg ix indicating an active segment
 tab_test1("(table.init 2 (i32.const 12) (i32.const 1) (i32.const 1))", 0,
-          "out of bounds");
+          "out of bounds table access");
 
 // init, using an elem seg ix more than once is OK
 tab_test2(
@@ -213,15 +217,15 @@ tab_test2("(elem.drop 1)",
 // drop, then init
 tab_test2("(elem.drop 1)",
           "(table.init 1 (i32.const 12) (i32.const 1) (i32.const 1))",
-          "out of bounds");
+          "out of bounds table access");
 
 // init: seg ix is valid passive, but length to copy > len of seg
 tab_test1("(table.init 1 (i32.const 12) (i32.const 0) (i32.const 5))", 0,
-          "out of bounds");
+          "out of bounds table access");
 
 // init: seg ix is valid passive, but implies copying beyond end of seg
 tab_test1("(table.init 1 (i32.const 12) (i32.const 2) (i32.const 3))", 0,
-          "out of bounds");
+          "out of bounds table access");
 
 // Tables are of different length with t1 shorter than t0, to test that we're not
 // using t0's limit for t1's bound
@@ -230,7 +234,7 @@ for ( let [table, oobval] of [[0,30],[1,28]] ) {
     // init: seg ix is valid passive, but implies copying beyond end of dst
     tab_test1(`(table.init $t${table} 1 (i32.const ${oobval-2}) (i32.const 1) (i32.const 3))`,
               table,
-              "out of bounds");
+              "out of bounds table access");
 
     // init: seg ix is valid passive, zero len, and src offset out of bounds at the
     // end of the table - this is allowed
@@ -242,7 +246,7 @@ for ( let [table, oobval] of [[0,30],[1,28]] ) {
     // end of the table - this is not allowed
     tab_test1(`(table.init $t${table} 1 (i32.const 12) (i32.const 5) (i32.const 0))`,
               table,
-              "out of bounds");
+              "out of bounds table access");
 
     // init: seg ix is valid passive, zero len, and dst offset out of bounds at the
     // end of the table - this is allowed
@@ -254,7 +258,7 @@ for ( let [table, oobval] of [[0,30],[1,28]] ) {
     // end of the table - this is not allowed
     tab_test1(`(table.init $t${table} 1 (i32.const ${oobval+1}) (i32.const 2) (i32.const 0))`,
               table,
-              "out of bounds");
+              "out of bounds table access");
 
     // init: seg ix is valid passive, zero len, and dst and src offsets out of bounds
     // at the end of the table - this is allowed
@@ -266,7 +270,7 @@ for ( let [table, oobval] of [[0,30],[1,28]] ) {
     // end of the table - this is not allowed
     tab_test1(`(table.init $t${table} 1 (i32.const ${oobval+1}) (i32.const 5) (i32.const 0))`,
               table,
-              "out of bounds");
+              "out of bounds table access");
 }
 
 // invalid argument types
@@ -338,7 +342,7 @@ function tbl_init(min, max, backup, write, segoffs=0) {
     // A fill reading past the end of the segment should throw *and* have filled
     // table with as much data as was available.
     let offs = min - backup;
-    print(`(assert_trap (invoke "run" (i32.const ${offs}) (i32.const ${write})) "out of bounds")`);
+    print(`(assert_trap (invoke "run" (i32.const ${offs}) (i32.const ${write})) "out of bounds table access")`);
     for (let i=0; i < min; i++) {
         print(`(assert_trap (invoke "test" (i32.const ${i})) "uninitialized element")`);
     }
@@ -383,5 +387,4 @@ print(
   (elem funcref) (elem funcref) (elem funcref) (elem funcref)
   (elem funcref) (elem funcref) (elem funcref) (elem funcref)
   (elem funcref)
-  (func (table.init 64 (i32.const 0) (i32.const 0) (i32.const 0))))
-`)
+  (func (table.init 64 (i32.const 0) (i32.const 0) (i32.const 0))))`)
