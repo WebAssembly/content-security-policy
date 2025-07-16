@@ -104,18 +104,19 @@ Conventions:
 
 
 
-.. index:: bit, integer, floating-point
+.. index:: bit, integer, floating-point, numeric vector
 .. _aux-bits:
 
 Representations
 ~~~~~~~~~~~~~~~
 
-Numbers have an underlying binary representation as a sequence of bits:
+Numbers and numeric vectors have an underlying binary representation as a sequence of bits:
 
 .. math::
    \begin{array}{lll@{\qquad}l}
-   \bits_{\K{i}N}(i) &=& \ibits_N(i) \\
-   \bits_{\K{f}N}(z) &=& \fbits_N(z) \\
+   \bits_{\IN}(i) &=& \ibits_N(i) \\
+   \bits_{\FN}(z) &=& \fbits_N(z) \\
+   \bits_{\VN}(i) &=& \ibits_N(i) \\
    \end{array}
 
 Each of these functions is a bijection, hence they are invertible.
@@ -161,6 +162,34 @@ Floating-Point
 where :math:`M = \significand(N)` and :math:`E = \exponent(N)`.
 
 
+.. index:: numeric vector, shape, lane
+.. _aux-lanes:
+.. _syntax-i128:
+
+Vectors
+.......
+
+Numeric vectors of type |VN| have the same underlying representation as an |IN|.
+They can also be interpreted as a sequence of numeric values packed into a |VN| with a particular |shape| :math:`t\K{x}M`,
+provided that :math:`N = |t|\cdot M`.
+
+.. math::
+   \begin{array}{l}
+   \begin{array}{lll@{\qquad}l}
+   \lanes_{t\K{x}M}(c) &=&
+     c_0~\dots~c_{M-1} \\
+   \end{array}
+   \\ \qquad
+     \begin{array}[t]{@{}r@{~}l@{}l@{~}l@{~}l}
+     (\where & w &=& |t| / 8 \\
+     \wedge & b^\ast &=& \bytes_{\IN}(c) \\
+     \wedge & c_i &=& \bytes_{t}^{-1}(b^\ast[i \cdot w \slice w]))
+     \end{array}
+   \end{array}
+
+This function is a bijection on |IN|, hence it is invertible.
+
+
 .. index:: byte, little endian, memory
 .. _aux-littleendian:
 .. _aux-bytes:
@@ -177,32 +206,7 @@ When a number is stored into :ref:`memory <syntax-mem>`, it is converted into a 
    \littleendian(d^8~{d'}^\ast~) &=& \littleendian({d'}^\ast)~\ibits_8^{-1}(d^8) \\
    \end{array}
 
-Again these functions are invertable bijections.
-
-
-.. index:: numeric vectors, shape
-.. _aux-lanes:
-
-Vectors
-.......
-
-Numeric vectors have the same underlying representation as an |i128|. They can also be interpreted as a sequence of numeric values packed into a |V128| with a particular |shape|.
-
-.. math::
-   \begin{array}{l}
-   \begin{array}{lll@{\qquad}l}
-   \lanes_{t\K{x}N}(c) &=&
-     c_0~\dots~c_{N-1} \\
-   \end{array}
-   \\ \qquad
-     \begin{array}[t]{@{}r@{~}l@{}}
-     (\where & B = |t| / 8 \\
-     \wedge & b^{16} = bytes_{\i128}(c) \\
-     \wedge & c_i = \bytes_{t}^{-1}(b^{16}[i \cdot B \slice B]))
-     \end{array}
-   \end{array}
-
-These functions are bijections, so they are invertible.
+Again these functions are invertible bijections.
 
 
 .. index:: integer
@@ -406,7 +410,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \iandnot_N(i_1, i_2) &=& \iand_N(i_1, \inot_N(i2))
+   \iandnot_N(i_1, i_2) &=& \iand_N(i_1, \inot_N(i_2))
    \end{array}
 
 .. _op-ior:
@@ -712,11 +716,13 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 :math:`\iextendMs_N(i)`
 .......................
 
-* Return :math:`\extends_{M,N}(i)`.
+* Let :math:`j` be the result of computing :math:`\wrap_{N,M}(i)`.
+
+* Return :math:`\extends_{M,N}(j)`.
 
 .. math::
    \begin{array}{lll@{\qquad}l}
-   \iextendMs_{N}(i) &=& \extends_{M,N}(i) \\
+   \iextendMs_{N}(i) &=& \extends_{M,N}(\wrap_{N,M}(i)) \\
    \end{array}
 
 
@@ -746,7 +752,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 * Let :math:`j` be the :ref:`signed interpretation <aux-signed>` of :math:`i`.
 
-* If :math:`j` greater than or equal to :math:`0`, then return :math:`i`.
+* If :math:`j` is greater than or equal to :math:`0`, then return :math:`i`.
 
 * Else return the negation of `j`, modulo :math:`2^N`.
 
@@ -793,8 +799,8 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \iminu_N(i_1, i_2) &=& i_1 & (\iff \ilts_N(i_1, i_2) = 1)\\
-   \iminu_N(i_1, i_2) &=& i_2 & (\otherwise)
+   \imins_N(i_1, i_2) &=& i_1 & (\iff \ilts_N(i_1, i_2) = 1)\\
+   \imins_N(i_1, i_2) &=& i_2 & (\otherwise)
    \end{array}
 
 
@@ -807,8 +813,8 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \iminu_N(i_1, i_2) &=& i_1 & (\iff \igtu_N(i_1, i_2) = 1)\\
-   \iminu_N(i_1, i_2) &=& i_2 & (\otherwise)
+   \imaxu_N(i_1, i_2) &=& i_1 & (\iff \igtu_N(i_1, i_2) = 1)\\
+   \imaxu_N(i_1, i_2) &=& i_2 & (\otherwise)
    \end{array}
 
 
@@ -821,8 +827,8 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \iminu_N(i_1, i_2) &=& i_1 & (\iff \igts_N(i_1, i_2) = 1)\\
-   \iminu_N(i_1, i_2) &=& i_2 & (\otherwise)
+   \imaxs_N(i_1, i_2) &=& i_1 & (\iff \igts_N(i_1, i_2) = 1)\\
+   \imaxs_N(i_1, i_2) &=& i_2 & (\otherwise)
    \end{array}
 
 
@@ -1060,13 +1066,13 @@ This non-deterministic result is expressed by the following auxiliary function p
 
 * Else if both :math:`z_1` and :math:`z_2` are infinities of equal sign, then return that infinity.
 
-* Else if one of :math:`z_1` or :math:`z_2` is an infinity, then return that infinity.
+* Else if either :math:`z_1` or :math:`z_2` is an infinity, then return that infinity.
 
 * Else if both :math:`z_1` and :math:`z_2` are zeroes of opposite sign, then return positive zero.
 
 * Else if both :math:`z_1` and :math:`z_2` are zeroes of equal sign, then return that zero.
 
-* Else if one of :math:`z_1` or :math:`z_2` is a zero, then return the other operand.
+* Else if either :math:`z_1` or :math:`z_2` is a zero, then return the other operand.
 
 * Else if both :math:`z_1` and :math:`z_2` are values with the same magnitude but opposite signs, then return positive zero.
 
@@ -1149,9 +1155,9 @@ This non-deterministic result is expressed by the following auxiliary function p
 
 * Else if both :math:`z_1` and :math:`z_2` are infinities of opposite sign, then return negative infinity.
 
-* Else if one of :math:`z_1` or :math:`z_2` is an infinity and the other a value with equal sign, then return positive infinity.
+* Else if either :math:`z_1` or :math:`z_2` is an infinity and the other a value with equal sign, then return positive infinity.
 
-* Else if one of :math:`z_1` or :math:`z_2` is an infinity and the other a value with opposite sign, then return negative infinity.
+* Else if either :math:`z_1` or :math:`z_2` is an infinity and the other a value with opposite sign, then return negative infinity.
 
 * Else if both :math:`z_1` and :math:`z_2` are zeroes of equal sign, then return positive zero.
 
@@ -1235,9 +1241,9 @@ This non-deterministic result is expressed by the following auxiliary function p
 
 * If either :math:`z_1` or :math:`z_2` is a NaN, then return an element of :math:`\nans_N\{z_1, z_2\}`.
 
-* Else if one of :math:`z_1` or :math:`z_2` is a negative infinity, then return negative infinity.
+* Else if either :math:`z_1` or :math:`z_2` is a negative infinity, then return negative infinity.
 
-* Else if one of :math:`z_1` or :math:`z_2` is a positive infinity, then return the other value.
+* Else if either :math:`z_1` or :math:`z_2` is a positive infinity, then return the other value.
 
 * Else if both :math:`z_1` and :math:`z_2` are zeroes of opposite signs, then return negative zero.
 
@@ -1264,9 +1270,9 @@ This non-deterministic result is expressed by the following auxiliary function p
 
 * If either :math:`z_1` or :math:`z_2` is a NaN, then return an element of :math:`\nans_N\{z_1, z_2\}`.
 
-* Else if one of :math:`z_1` or :math:`z_2` is a positive infinity, then return positive infinity.
+* Else if either :math:`z_1` or :math:`z_2` is a positive infinity, then return positive infinity.
 
-* Else if one of :math:`z_1` or :math:`z_2` is a negative infinity, then return the other value.
+* Else if either :math:`z_1` or :math:`z_2` is a negative infinity, then return the other value.
 
 * Else if both :math:`z_1` and :math:`z_2` are zeroes of opposite signs, then return positive zero.
 
@@ -1657,7 +1663,7 @@ This non-deterministic result is expressed by the following auxiliary function p
 
 * Else if both :math:`z_1` and :math:`z_2` are zeroes, then return :math:`1`.
 
-* Else if :math:`z_1` is smaller than or equal to :math:`z_2`, then return :math:`1`.
+* Else if :math:`z_1` is larger than or equal to :math:`z_2`, then return :math:`1`.
 
 * Else return :math:`0`.
 

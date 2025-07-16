@@ -1,6 +1,6 @@
 # WebAssembly Reference Interpreter
 
-This repository implements a interpreter for WebAssembly. It is written for clarity and simplicity, _not_ speed. It is intended as a playground for trying out ideas and a device for nailing down the exact semantics, and as a proxy for the (yet to be produced) formal specification of WebAssembly. For that purpose, the code is written in a fairly declarative, "speccy" way.
+This repository implements an interpreter for WebAssembly. It is written for clarity and simplicity, _not_ speed. It is intended as a playground for trying out ideas and a device for nailing down their exact semantics. For that purpose, the code is written in a fairly declarative, "speccy" way.
 
 The interpreter can
 
@@ -10,22 +10,25 @@ The interpreter can
 * *export* test scripts to self-contained JavaScript test cases
 * *run* as an interactive interpreter
 
-The text format defines modules in S-expression syntax. Moreover, it is generalised to a (very dumb) form of *script* that can define multiples module and a batch of invocations, assertions, and conversions between them. As such it is richer than the binary format, with the additional functionality purely intended as testing infrastructure. (See [below](#scripts) for details.)
+The text format defines modules in S-expression syntax. Moreover, it is generalised to a form of *script* that can define multiples module and a batch of invocations, assertions, and conversions between them. As such it is richer than the binary format, with the additional functionality purely intended as testing infrastructure. (See [below](#scripts) for details.)
 
 
 ## Building
 
-You'll need OCaml 4.08 or higher. Instructions for installing a recent version of OCaml on multiple platforms are available [here](https://ocaml.org/docs/install.html). On most platforms, the recommended way is through [OPAM](https://ocaml.org/docs/install.html#OPAM).
+You'll need OCaml 4.12 or higher. Instructions for installing a recent version of OCaml on multiple platforms are available [here](https://ocaml.org/docs/installing-ocaml). On most platforms, the recommended way is through [Opam](https://ocaml.org/docs/installing-ocaml#install-opam).
+
+You'll also need to install the dune build system. See the [installation instructions](https://github.com/ocaml/dune#installation-1).
+
+And you need to install the [Menhir](https://gallium.inria.fr/~fpottier/menhir/) parser generator:
+```
+opam install menhir
+```
 
 Once you have OCaml, simply do
-
 ```
 make
 ```
-You'll get an executable named `./wasm`. This is a byte code executable. If you want a (faster) native code executable, do
-```
-make opt
-```
+You'll get an executable named `./wasm`.
 To run the test suite,
 ```
 make test
@@ -34,12 +37,6 @@ To do everything:
 ```
 make all
 ```
-Before committing changes, you should do
-```
-make land
-```
-That builds `all`, plus updates `winmake.bat`.
-
 
 #### Building on Windows
 
@@ -48,12 +45,6 @@ The instructions depend on how you [installed OCaml on Windows](https://ocaml.or
 1. *Cygwin*: If you want to build a native code executable, or want to hack on the interpreter (i.e., use incremental compilation), then you need to install the Cygwin core that is included with the OCaml installer. Then you can build the interpreter using `make` in the Cygwin terminal, as described above.
 
 2. *Windows Subsystem for Linux* (WSL): You can build the interpreter using `make`, as described above.
-
-3. *From source*: If you just want to build the interpreter and don't care about modifying it, you don't need to install the Cygwin core that comes with the installer. Just install OCaml itself and run
-```
-winmake.bat
-```
-in a Windows shell, which creates a program named `wasm`. Note that this will be a byte code executable only, i.e., somewhat slower.
 
 In any way, in order to run the test suite you'll need to have Python installed. If you used Option 3, you can invoke the test runner `runtests.py` directly instead of doing it through `make`.
 
@@ -65,7 +56,10 @@ The Makefile also provides a target to compile (parts of) the interpreter into a
 ```
 make wast.js
 ```
-Building this target requires node.js and BuckleScript.
+Building this target requires `js_of_ocaml`, which can be installed with OPAM:
+```
+opam install js_of_ocaml js_of_ocaml-ppx
+```
 
 
 ## Synopsis
@@ -139,7 +133,7 @@ WebAssemblyText.encode(source)
 ```
 which turns a module in S-expression syntax into a WebAssembly binary, and
 ```
-WebAssemblyText.decode(binary, width = 80)
+WebAssemblyText.decode(binary, width)
 ```
 which pretty-prints a binary back into a canonicalised S-expression string.
 
@@ -151,13 +145,27 @@ let binary = WebAssemblyText.encode(source)
 (new WebAssembly.Instance(new WebAssembly.Module(binary))).exports.f(3, 4)
 // => 7
 
-WebAssemblyText.decode(binary)
+WebAssemblyText.decode(binary, 80)
 // =>
 // (module
 //   (type $0 (func (param i32 i32) (result i32)))
 //   (func $0 (type 0) (local.get 0) (local.get 1) (i32.add))
 //   (export "f" (func 0))
 // )
+```
+
+Depending on how you load the library, the object may be accessed in different ways. For example, using `require` in node.js:
+
+```
+let wast = require("./wast.js");
+let binary = wast.WebAssemblyText.encode("(module)");
+```
+
+Or using `load` from a JavaScript shell:
+
+```
+load("./wast.js");
+let binary = WebAssemblyText.encode("(module)");
 ```
 
 
@@ -356,7 +364,7 @@ In particular, comments of the latter form nest properly.
 
 ## Scripts
 
-In order to be able to check and run modules for testing purposes, the S-expression format is interpreted as a very simple and dumb notion of "script", with commands as follows:
+In order to be able to check and run modules for testing purposes, the S-expression format is interpreted as a very simple notion of "script", with commands as follows:
 
 ```
 script: <cmd>*
@@ -413,6 +421,9 @@ Commands are executed in sequence. Commands taking an optional module name refer
 
 After a module is _registered_ under a string name it is available for importing in other modules.
 
+The failure string in assertions exists for documentation purposes.
+The reference interpreter itself checks that the string is a prefix of the actual error message it generates.
+
 The script format supports additional syntax for defining modules.
 A module of the form `(module binary <string>*)` is given in binary form and will be decoded from the (concatenation of the) strings.
 A module of the form `(module quote <string>*)` is given in textual form and will be parsed from the (concatenation of the) strings. In both cases, decoding/parsing happens when the command is executed, not when the script is parsed, so that meta commands like `assert_malformed` can be used to check expected errors.
@@ -431,14 +442,14 @@ It also supports an "unchecked" mode (flag `-u`), in which module definitions ar
 When running scripts, the interpreter predefines a simple host module named `"spectest"` that has the following module type:
 ```
 (module
-  (global (export "global_i32") i32)
-  (global (export "global_i64") i64)
-  (global (export "global_f32") f32)
-  (global (export "global_f64") f64)
+  (global (export "global_i32") i32)      ;; value 666
+  (global (export "global_i64") i64)      ;; value 666
+  (global (export "global_f32") f32)      ;; value 666.6
+  (global (export "global_f64") f64)      ;; value 666.6
 
-  (table (export "table") 10 20 funcref)
+  (table (export "table") 10 20 funcref)  ;; null-initialized
 
-  (memory (export "memory") 1 2)
+  (memory (export "memory") 1 2)          ;; zero-initialized
 
   (func (export "print"))
   (func (export "print_i32") (param i32))

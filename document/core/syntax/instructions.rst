@@ -45,7 +45,7 @@ These operations closely match respective operations available in hardware.
    \production{signedness} & \sx &::=&
      \K{u} ~|~ \K{s} \\
    \production{instruction} & \instr &::=&
-     \K{i}\X{nn}\K{.}\CONST~\xref{syntax/values}{syntax-int}{\iX{\X{nn}}} ~|~
+     \K{i}\X{nn}\K{.}\CONST~\xref{syntax/values}{syntax-int}{\uX{\X{nn}}} ~|~
      \K{f}\X{nn}\K{.}\CONST~\xref{syntax/values}{syntax-float}{\fX{\X{nn}}} \\&&|&
      \K{i}\X{nn}\K{.}\iunop ~|~
      \K{f}\X{nn}\K{.}\funop \\&&|&
@@ -171,7 +171,7 @@ Occasionally, it is convenient to group operators together according to the foll
    \end{array}
 
 
-.. index:: ! vector instruction, numeric vectors, number, value, value type, SIMD
+.. index:: ! vector instruction, numeric vector, number, value, value type, SIMD
    pair: abstract syntax; instruction
 .. _syntax-laneidx:
 .. _syntax-shape:
@@ -195,7 +195,7 @@ Occasionally, it is convenient to group operators together according to the foll
 Vector Instructions
 ~~~~~~~~~~~~~~~~~~~
 
-Vector instructions (also known as *SIMD* instructions, single data multiple value) provide basic operations over :ref:`values <syntax-value>` of :ref:`vector type <syntax-vectype>`.
+Vector instructions (also known as *SIMD* instructions, *single instruction multiple data*) provide basic operations over :ref:`values <syntax-value>` of :ref:`vector type <syntax-vectype>`.
 
 .. math::
    \begin{array}{llcl}
@@ -208,6 +208,10 @@ Vector instructions (also known as *SIMD* instructions, single data multiple val
    \production{half} & \half &::=&
      \K{low} ~|~ \K{high} \\
    \production{lane index} & \laneidx &::=& \u8 \\
+   \end{array}
+
+.. math::
+   \begin{array}{llcl}
    \production{instruction} & \instr &::=&
      \dots \\&&|&
      \K{v128.}\VCONST~\i128 \\&&|&
@@ -271,6 +275,10 @@ Vector instructions (also known as *SIMD* instructions, single data multiple val
      \K{f64x2.}\VCONVERT\K{\_low\_i32x4\_}\sx ~|~
      \K{f64x2.}\VPROMOTE\K{\_low\_f32x4} \\&&|&
      \dots \\
+   \end{array}
+
+.. math::
+   \begin{array}{llcl}
    \production{vector bitwise unary operator} & \vvunop &::=&
      \K{not} \\
    \production{vector bitwise binary operator} & \vvbinop &::=&
@@ -428,7 +436,7 @@ Instructions in this group are concerned with accessing :ref:`references <syntax
      \REFFUNC~\funcidx \\
    \end{array}
 
-These instruction produce a null value, check for a null value, or produce a reference to a given function, respectively.
+These instructions produce a null value, check for a null value, or produce a reference to a given function, respectively.
 
 
 .. index:: ! parametric instruction, value type
@@ -451,7 +459,8 @@ Instructions in this group can operate on operands of any :ref:`value type <synt
 The |DROP| instruction simply throws away a single operand.
 
 The |SELECT| instruction selects one of its first two operands based on whether its third operand is zero or not.
-It may include a :ref:`value type <syntax-valtype>` determining the type of these operands. If missing, the operands must be of :ref:`numeric type <syntax-numtype>`.
+It may include a :ref:`value type <syntax-valtype>` determining the type of these operands.
+If missing, the operands must be of :ref:`numeric <syntax-numtype>` or :ref:`vector <syntax-vectype>` type.
 
 .. note::
    In future versions of WebAssembly, the type annotation on |SELECT| may allow for more than a single value being selected at the same time.
@@ -586,7 +595,7 @@ All values are read and written in |LittleEndian|_ byte order.
 A :ref:`trap <trap>` results if any of the accessed memory bytes lies outside the address range implied by the memory's current size.
 
 .. note::
-   Future version of WebAssembly might provide memory instructions with 64 bit address ranges.
+   Future versions of WebAssembly might provide memory instructions with 64 bit address ranges.
 
 The |MEMORYSIZE| instruction returns the current size of a memory.
 The |MEMORYGROW| instruction grows memory by a given delta and returns the previous size, or :math:`-1` if enough memory cannot be allocated.
@@ -699,7 +708,7 @@ the callee is dynamically checked against the :ref:`function type <syntax-functy
 Expressions
 ~~~~~~~~~~~
 
-:ref:`Function <syntax-func>` bodies, initialization values for :ref:`globals <syntax-global>`, and offsets of :ref:`element <syntax-elem>` or :ref:`data <syntax-data>` segments are given as expressions, which are sequences of :ref:`instructions <syntax-instr>` terminated by an |END| marker.
+:ref:`Function <syntax-func>` bodies, initialization values for :ref:`globals <syntax-global>`, elements and offsets of :ref:`element <syntax-elem>` segments, and offsets of :ref:`data <syntax-data>` segments are given as expressions, which are sequences of :ref:`instructions <syntax-instr>` terminated by an |END| marker.
 
 .. math::
    \begin{array}{llll}

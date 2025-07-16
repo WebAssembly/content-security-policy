@@ -49,8 +49,11 @@ In order to distinguish symbols of the textual syntax from symbols of the abstra
   (This is a shorthand for :math:`T^n` where :math:`n \leq 1`.)
 
 * :math:`x{:}T` denotes the same language as the nonterminal :math:`T`, but also binds the variable :math:`x` to the attribute synthesized for :math:`T`.
+  A pattern may also be used instead of a variable, e.g., :math:`(x,y){:}T`.
 
 * Productions are written :math:`\T{sym} ::= T_1 \Rightarrow A_1 ~|~ \dots ~|~ T_n \Rightarrow A_n`, where each :math:`A_i` is the attribute that is synthesized for :math:`\T{sym}` in the given case, usually from attribute variables bound in :math:`T_i`.
+
+* Large productions may be split into multiple definitions, indicated by ending the first one with explicit ellipses, :math:`\T{sym} ::= T_1 \Rightarrow A_1 ~|~ \dots`, and starting continuations with ellipses, :math:`\T{sym} ::= \dots ~|~ T_2 \Rightarrow A_2`.
 
 * Some productions are augmented by side conditions in parentheses, which restrict the applicability of the production. They provide a shorthand for a combinatorial expansion of the production into many separate cases.
 
@@ -110,14 +113,14 @@ Contexts
 
 The text format allows the use of symbolic :ref:`identifiers <text-id>` in place of :ref:`indices <syntax-index>`.
 To resolve these identifiers into concrete indices,
-some grammar production are indexed by an *identifier context* :math:`I` as a synthesized attribute that records the declared identifiers in each :ref:`index space <syntax-index>`.
+some grammar productions are indexed by an *identifier context* :math:`I` as a synthesized attribute that records the declared identifiers in each :ref:`index space <syntax-index>`.
 In addition, the context records the types defined in the module, so that :ref:`parameter <text-param>` indices can be computed for :ref:`functions <text-func>`.
 
 It is convenient to define identifier contexts as :ref:`records <notation-record>` :math:`I` with abstract syntax as follows:
 
 .. math::
    \begin{array}{llll}
-   \production{(identifier context)} & I &::=&
+   \production{identifier context} & I &::=&
      \begin{array}[t]{l@{~}ll}
      \{ & \ITYPES & (\Tid^?)^\ast, \\
         & \IFUNCS & (\Tid^?)^\ast, \\

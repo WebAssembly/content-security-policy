@@ -62,7 +62,8 @@ Control Instructions
        &\Rightarrow& \BRTABLE~l^\ast~l_N \\ &&|&
      \hex{0F} &\Rightarrow& \RETURN \\ &&|&
      \hex{10}~~x{:}\Bfuncidx &\Rightarrow& \CALL~x \\ &&|&
-     \hex{11}~~y{:}\Btypeidx~~x{:}\Btableidx &\Rightarrow& \CALLINDIRECT~x~y \\
+     \hex{11}~~y{:}\Btypeidx~~x{:}\Btableidx &\Rightarrow& \CALLINDIRECT~x~y \\ &&|&
+     \dots
    \end{array}
 
 .. note::
@@ -511,7 +512,7 @@ The |VCONST| instruction is followed by 16 immediate bytes, which are converted 
    \begin{array}{llclll}
    \production{instruction} & \Binstr &::=& \dots \\&&|&
      \hex{FD}~~12{:}\Bu32~~(b{:}\Bbyte)^{16} &\Rightarrow& \V128.\VCONST~
-     bytes_{\K{i128}}^{-1}(b_{0}~\dots~b_{15}) \\
+     \bytes_{\K{i128}}^{-1}(b_{0}~\dots~b_{15}) \\
    \end{array}
 
 .. _binary-vternop:
@@ -614,7 +615,7 @@ All other vector instructions are plain opcodes without any immediates.
      \hex{FD}~~216{:}\Bu32 &\Rightarrow& \I64X2.\VLT\K{\_s} \\ &&|&
      \hex{FD}~~217{:}\Bu32 &\Rightarrow& \I64X2.\VGT\K{\_s} \\ &&|&
      \hex{FD}~~218{:}\Bu32 &\Rightarrow& \I64X2.\VLE\K{\_s} \\ &&|&
-     \hex{FD}~~219{:}\Bu32 &\Rightarrow& \I64X2.\VGE\K{\_s} \\ &&|&
+     \hex{FD}~~219{:}\Bu32 &\Rightarrow& \I64X2.\VGE\K{\_s} \\
    \end{array}
 
 .. _binary-vfrelop:

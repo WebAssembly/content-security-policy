@@ -34,6 +34,8 @@ The following grammar handles the corresponding update to the :ref:`identifier c
    \production{label} & \Tlabel_I &::=&
      v{:}\Tid &\Rightarrow& \{\ILABELS~v\} \compose I
        & (\iff v \notin I.\ILABELS) \\ &&|&
+     v{:}\Tid &\Rightarrow& \{\ILABELS~v\} \compose (I \with \ILABELS[i] = \epsilon)
+       & (\iff I.\ILABELS[i] = v) \\ &&|&
      \epsilon &\Rightarrow& \{\ILABELS~(\epsilon)\} \compose I \\
    \end{array}
 
@@ -41,6 +43,9 @@ The following grammar handles the corresponding update to the :ref:`identifier c
    The new label entry is inserted at the *beginning* of the label list in the identifier context.
    This effectively shifts all existing labels up by one,
    mirroring the fact that control instructions are indexed relatively not absolutely.
+
+   If a label with the same name already exists,
+   then it is shadowed and the earlier label becomes inaccessible.
 
 
 .. index:: control instructions, structured control, label, block, branch, result type, label index, function index, type index, vector, polymorphism
@@ -113,7 +118,8 @@ All other control instruction are represented verbatim.
      \text{return} &\Rightarrow& \RETURN \\ &&|&
      \text{call}~~x{:}\Tfuncidx_I &\Rightarrow& \CALL~x \\ &&|&
      \text{call\_indirect}~~x{:}\Ttableidx~~y,I'{:}\Ttypeuse_I &\Rightarrow& \CALLINDIRECT~x~y
-       & (\iff I' = \{\ILOCALS~(\epsilon)^\ast\}) \\
+       & (\iff I' = \{\ILOCALS~(\epsilon)^\ast\}) \\ &&|&
+     \dots
    \end{array}
 
 .. note::
@@ -160,7 +166,7 @@ Reference Instructions
    \production{instruction} & \Tplaininstr_I &::=& \dots \\ &&|&
      \text{ref.null}~~t{:}\Theaptype &\Rightarrow& \REFNULL~t \\ &&|&
      \text{ref.is\_null} &\Rightarrow& \REFISNULL \\ &&|&
-     \text{ref.func}~~x{:}\Tfuncidx &\Rightarrow& \REFFUNC~x \\ &&|&
+     \text{ref.func}~~x{:}\Tfuncidx &\Rightarrow& \REFFUNC~x \\
    \end{array}
 
 
@@ -239,18 +245,18 @@ Table Instructions
 Abbreviations
 .............
 
-For backwards compatibility, all :math:`table indices <syntax-tableidx>` may be omitted from table instructions, defaulting to :math:`0`.
+For backwards compatibility, all :ref:`table indices <syntax-tableidx>` may be omitted from table instructions, defaulting to :math:`0`.
 
 .. math::
-   \begin{array}{llclll}
+   \begin{array}{llcl}
    \production{instruction} &
-     \text{table.get} &\equiv& \text{table.get}~~\text{0} \\ &&|&
-     \text{table.set} &\equiv& \text{table.set}~~\text{0} \\ &&|&
-     \text{table.size} &\equiv& \text{table.size}~~\text{0} \\ &&|&
-     \text{table.grow} &\equiv& \text{table.grow}~~\text{0} \\ &&|&
-     \text{table.fill} &\equiv& \text{table.fill}~~\text{0} \\ &&|&
-     \text{table.copy} &\equiv& \text{table.copy}~~\text{0}~~\text{0} \\ &&|&
-     \text{table.init}~~x{:}\Telemidx_I &\equiv& \text{table.init}~~\text{0}~~x{:}\Telemidx_I \\ &&|&
+     \text{table.get} &\equiv& \text{table.get}~~\text{0} \\ &
+     \text{table.set} &\equiv& \text{table.set}~~\text{0} \\ &
+     \text{table.size} &\equiv& \text{table.size}~~\text{0} \\ &
+     \text{table.grow} &\equiv& \text{table.grow}~~\text{0} \\ &
+     \text{table.fill} &\equiv& \text{table.fill}~~\text{0} \\ &
+     \text{table.copy} &\equiv& \text{table.copy}~~\text{0}~~\text{0} \\ &
+     \text{table.init}~~x{:}\Telemidx_I &\equiv& \text{table.init}~~\text{0}~~x{:}\Telemidx_I \\
    \end{array}
 
 
@@ -795,6 +801,7 @@ Vector constant instructions have a mandatory :ref:`shape <syntax-vec-shape>` de
      \text{i32x4.all\_true} &\Rightarrow& \I32X4.\ALLTRUE\\ &&|&
      \text{i32x4.bitmask} &\Rightarrow& \I32X4.\BITMASK\\ &&|&
      \text{i32x4.extadd\_pairwise\_i16x8\_s} &\Rightarrow& \I32X4.\EXTADDPAIRWISE\K{\_i16x8\_s}\\ &&|&
+     \text{i32x4.extadd\_pairwise\_i16x8\_u} &\Rightarrow& \I32X4.\EXTADDPAIRWISE\K{\_i16x8\_u}\\ &&|&
      \text{i32x4.extend\_low\_i16x8\_s} &\Rightarrow& \I32X4.\VEXTEND\K{\_low\_i16x8\_s}\\ &&|&
      \text{i32x4.extend\_high\_i16x8\_s} &\Rightarrow& \I32X4.\VEXTEND\K{\_high\_i16x8\_s}\\ &&|&
      \text{i32x4.extend\_low\_i16x8\_u} &\Rightarrow& \I32X4.\VEXTEND\K{\_low\_i16x8\_u}\\ &&|&
@@ -848,6 +855,10 @@ Vector constant instructions have a mandatory :ref:`shape <syntax-vec-shape>` de
      \text{f32x4.abs} &\Rightarrow& \F32X4.\VABS\\ &&|&
      \text{f32x4.neg} &\Rightarrow& \F32X4.\VNEG\\ &&|&
      \text{f32x4.sqrt} &\Rightarrow& \F32X4.\VSQRT\\ &&|&
+     \text{f32x4.ceil} &\Rightarrow& \F32X4.\VCEIL\\ &&|&
+     \text{f32x4.floor} &\Rightarrow& \F32X4.\VFLOOR\\ &&|&
+     \text{f32x4.trunc} &\Rightarrow& \F32X4.\VTRUNC\\ &&|&
+     \text{f32x4.nearest} &\Rightarrow& \F32X4.\VNEAREST\\ &&|&
      \text{f32x4.add} &\Rightarrow& \F32X4.\VADD\\ &&|&
      \text{f32x4.sub} &\Rightarrow& \F32X4.\VSUB\\ &&|&
      \text{f32x4.mul} &\Rightarrow& \F32X4.\VMUL\\ &&|&
@@ -864,6 +875,10 @@ Vector constant instructions have a mandatory :ref:`shape <syntax-vec-shape>` de
      \text{f64x2.abs} &\Rightarrow& \F64X2.\VABS\\ &&|&
      \text{f64x2.neg} &\Rightarrow& \F64X2.\VNEG\\ &&|&
      \text{f64x2.sqrt} &\Rightarrow& \F64X2.\VSQRT\\ &&|&
+     \text{f64x2.ceil} &\Rightarrow& \F64X2.\VCEIL\\ &&|&
+     \text{f64x2.floor} &\Rightarrow& \F64X2.\VFLOOR\\ &&|&
+     \text{f64x2.trunc} &\Rightarrow& \F64X2.\VTRUNC\\ &&|&
+     \text{f64x2.nearest} &\Rightarrow& \F64X2.\VNEAREST\\ &&|&
      \text{f64x2.add} &\Rightarrow& \F64X2.\VADD\\ &&|&
      \text{f64x2.sub} &\Rightarrow& \F64X2.\VSUB\\ &&|&
      \text{f64x2.mul} &\Rightarrow& \F64X2.\VMUL\\ &&|&
@@ -886,7 +901,7 @@ Vector constant instructions have a mandatory :ref:`shape <syntax-vec-shape>` de
      \text{f64x2.convert\_low\_i32x4\_s} &\Rightarrow& \F64X2.\VCONVERT\K{\_low\_i32x4\_s}\\  &&|&
      \text{f64x2.convert\_low\_i32x4\_u} &\Rightarrow& \F64X2.\VCONVERT\K{\_low\_i32x4\_u}\\ &&|&
      \text{f32x4.demote\_f64x2\_zero} &\Rightarrow& \F32X4.\VDEMOTE\K{\_f64x2\_zero}\\ &&|&
-     \text{f64x2.promote\_low\_f32x4} &\Rightarrow& \F64X2.\VPROMOTE\K{\_low\_f32x4}\\ &&|&
+     \text{f64x2.promote\_low\_f32x4} &\Rightarrow& \F64X2.\VPROMOTE\K{\_low\_f32x4}\\
    \end{array}
 
 
@@ -908,7 +923,7 @@ Such a folded instruction can appear anywhere a regular instruction can.
 
 .. math::
    \begin{array}{lllll}
-   \production{instruction} & 
+   \production{instruction} &
      \text{(}~\Tplaininstr~~\Tfoldedinstr^\ast~\text{)}
        &\equiv\quad \Tfoldedinstr^\ast~~\Tplaininstr \\ &
      \text{(}~\text{block}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~\text{)}
@@ -916,7 +931,7 @@ Such a folded instruction can appear anywhere a regular instruction can.
      \text{(}~\text{loop}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~\text{)}
        &\equiv\quad \text{loop}~~\Tlabel~~\Tblocktype~~\Tinstr^\ast~~\text{end} \\ &
      \text{(}~\text{if}~~\Tlabel~~\Tblocktype~~\Tfoldedinstr^\ast
-       &\hspace{-3ex} \text{(}~\text{then}~~\Tinstr_1^\ast~\text{)}~~\text{(}~\text{else}~~\Tinstr_2^\ast~\text{)}^?~~\text{)}
+       &\hspace{-3ex} \text{(}~\text{then}~~\Tinstr_1^\ast~\text{)}~~(\text{(}~\text{else}~~\Tinstr_2^\ast~\text{)})^?~~\text{)}
        \quad\equiv \\ &\qquad
          \Tfoldedinstr^\ast~~\text{if}~~\Tlabel~~\Tblocktype &\hspace{-1ex} \Tinstr_1^\ast~~\text{else}~~(\Tinstr_2^\ast)^?~\text{end} \\
    \end{array}

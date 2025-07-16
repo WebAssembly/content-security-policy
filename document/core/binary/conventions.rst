@@ -54,8 +54,11 @@ In order to distinguish symbols of the binary syntax from symbols of the abstrac
   (This is a shorthand for :math:`B^n` where :math:`n \leq 1`.)
 
 * :math:`x{:}B` denotes the same language as the nonterminal :math:`B`, but also binds the variable :math:`x` to the attribute synthesized for :math:`B`.
+  A pattern may also be used instead of a variable, e.g., :math:`7{:}B`.
 
 * Productions are written :math:`\B{sym} ::= B_1 \Rightarrow A_1 ~|~ \dots ~|~ B_n \Rightarrow A_n`, where each :math:`A_i` is the attribute that is synthesized for :math:`\B{sym}` in the given case, usually from attribute variables bound in :math:`B_i`.
+
+* Large productions may be split into multiple definitions, indicated by ending the first one with explicit ellipses, :math:`\B{sym} ::= B_1 \Rightarrow A_1 ~|~ \dots`, and starting continuations with ellipses, :math:`\B{sym} ::= \dots ~|~ B_2 \Rightarrow A_2`.
 
 * Some productions are augmented by side conditions in parentheses, which restrict the applicability of the production. They provide a shorthand for a combinatorial expansion of the production into many separate cases.
 

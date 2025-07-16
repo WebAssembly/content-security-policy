@@ -14,7 +14,9 @@ let nat32 = I32.to_string_u
 let add_hex_char buf c = Printf.bprintf buf "\\%02x" (Char.code c)
 let add_char buf = function
   | '\n' -> Buffer.add_string buf "\\n"
+  | '\r' -> Buffer.add_string buf "\\r"
   | '\t' -> Buffer.add_string buf "\\t"
+  | '\'' -> Buffer.add_string buf "\\'"
   | '\"' -> Buffer.add_string buf "\\\""
   | '\\' -> Buffer.add_string buf "\\\\"
   | c when '\x20' <= c && c < '\x7f' -> Buffer.add_char buf c
@@ -679,14 +681,14 @@ let definition mode x_opt def =
         match def.it with
         | Textual m -> m
         | Encoded (_, bs) -> Decode.decode "" bs
-        | Quoted (_, s) -> unquote (Parse.string_to_module s)
+        | Quoted (_, s) -> unquote (snd (Parse.Module.parse_string s))
       in module_with_var_opt x_opt (unquote def)
     | `Binary ->
       let rec unquote def =
         match def.it with
         | Textual m -> Encode.encode m
         | Encoded (_, bs) -> Encode.encode (Decode.decode "" bs)
-        | Quoted (_, s) -> unquote (Parse.string_to_module s)
+        | Quoted (_, s) -> unquote (snd (Parse.Module.parse_string s))
       in binary_module_with_var_opt x_opt (unquote def)
     | `Original ->
       match def.it with

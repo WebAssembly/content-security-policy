@@ -16,6 +16,8 @@
   (data (memory $m) (i32.const 1) "a" "" "bcd")
   (data (memory $m) (offset (i32.const 0)))
   (data (memory $m) (offset (i32.const 0)) "" "a" "bc" "")
+  (data)
+  (data "a" "" "bcd")
   (data $d1 (i32.const 0))
   (data $d2 (i32.const 1) "a" "" "bcd")
   (data $d3 (offset (i32.const 0)))
@@ -28,6 +30,8 @@
   (data $d10 (memory $m) (i32.const 1) "a" "" "bcd")
   (data $d11 (memory $m) (offset (i32.const 0)))
   (data $d12 (memory $m) (offset (i32.const 0)) "" "a" "bc" "")
+  (data $d13)
+  (data $d14 "a" "" "bcd")
 )
 
 ;; Basic use
@@ -81,9 +85,15 @@
   (data (global.get $g) "a")
 )
 
-;; Use of internal globals in constant expressions is not allowed in MVP.
-;; (module (memory 1) (data (global.get 0) "a") (global i32 (i32.const 0)))
-;; (module (memory 1) (data (global.get $g) "a") (global $g i32 (i32.const 0)))
+(assert_invalid
+  (module (memory 1) (global i32 (i32.const 0)) (data (global.get 0) "a"))
+  "unknown global"
+)
+(assert_invalid
+  (module (memory 1) (global $g i32 (i32.const 0)) (data (global.get $g) "a"))
+  "unknown global"
+)
+
 
 ;; Corner cases
 
@@ -456,11 +466,14 @@
   "constant expression required"
 )
 
-;; Use of internal globals in constant expressions is not allowed in MVP.
-;; (assert_invalid
-;;   (module (memory 1) (data (global.get $g)) (global $g (mut i32) (i32.const 0)))
-;;   "constant expression required"
-;; )
+(assert_invalid
+  (module
+    (global $g (import "test" "g") (mut i32))
+    (memory 1)
+    (data (global.get $g))
+  )
+  "constant expression required"
+)
 
 (assert_invalid
    (module 
