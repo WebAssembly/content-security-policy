@@ -6,7 +6,7 @@
   <meta content="ED" name="w3c-status">
   <meta content="Bikeshed version 7a96e07ec, updated Mon Jul 14 11:12:36 2025 -0700" name="generator">
   <link href="https://www.w3.org/TR/wasm-js-api-2/" rel="canonical">
-  <meta content="cfa86738f6feae9c4d1a9bd95ff1c9fab28c5aa5" name="revision">
+  <meta content="893da3bce56fbdf971e699495bd210a60f07e1bb" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>
 emu-const {
@@ -861,13 +861,18 @@ and the <a href="https://www.w3.org/TR/wasm-web-api/">WebAssembly Web API</a>.
       <li><a href="#stack-overflow"><span class="secno">6.1</span> <span class="content">Stack Overflow</span></a>
       <li><a href="#out-of-memory"><span class="secno">6.2</span> <span class="content">Out of Memory</span></a>
      </ol>
-    <li><a href="#limits"><span class="secno">7</span> <span class="content">Implementation-defined Limits</span></a>
-    <li><a href="#security-considerations"><span class="secno">8</span> <span class="content">Security and Privacy Considerations</span></a>
     <li>
-     <a href="#change-history"><span class="secno">9</span> <span class="content">Change History</span></a>
+     <a href="#implementation-defined-operations"><span class="secno">7</span> <span class="content">Implementation-defined Operations</span></a>
      <ol class="toc">
-      <li><a href="#release-20"><span class="secno">9.1</span> <span class="content">Release 2.0</span></a>
-      <li><a href="#release-30"><span class="secno">9.2</span> <span class="content">Release 3.0</span></a>
+      <li><a href="#host-ensure-can-compile-wasm-bytes"><span class="secno">7.1</span> <span class="content">HostEnsureCanCompileWasmBytes()</span></a>
+     </ol>
+    <li><a href="#limits"><span class="secno">8</span> <span class="content">Implementation-defined Limits</span></a>
+    <li><a href="#security-considerations"><span class="secno">9</span> <span class="content">Security and Privacy Considerations</span></a>
+    <li>
+     <a href="#change-history"><span class="secno">10</span> <span class="content">Change History</span></a>
+     <ol class="toc">
+      <li><a href="#release-20"><span class="secno">10.1</span> <span class="content">Release 2.0</span></a>
+      <li><a href="#release-30"><span class="secno">10.2</span> <span class="content">Release 3.0</span></a>
      </ol>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
@@ -981,10 +986,8 @@ This mapping is used to ensure that, for a given <a data-link-type="dfn" href="h
 
     <ol>
      <li data-md>
-      <p>Perform <u class="link-error" data-lt="HostEnsureCanCompileWasmBytes()" title="LINK ERROR: No &apos;abstract-op&apos; refs found for &apos;HostEnsureCanCompileWasmBytes()&apos;.">HostEnsureCanCompileWasmBytes()</u>.</p>
-    </ol>
-    <p class="note" role="note"><span class="marker">Note:</span> This operation terminates with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror">CompileError</a></code> exception if the operation is not permitted.</p>
-    <ol>
+      <p>Perform <a data-link-type="abstract-op" href="#abstract-opdef-hostensurecancompilewasmbytes" id="ref-for-abstract-opdef-hostensurecancompilewasmbytes">HostEnsureCanCompileWasmBytes()</a>.
+Note: This operation terminates with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror">CompileError</a></code> exception if the operation is not permitted.</p>
      <li data-md>
       <p>Let <var>module</var> be <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-module-decode" id="ref-for-embed-module-decode">module_decode</a>(<var>bytes</var>). If <var>module</var> is <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error">error</a>, return <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/appendix/embedding.html#embed-error" id="ref-for-embed-error①">error</a>.</p>
      <li data-md>
@@ -1414,7 +1417,7 @@ If this throws an exception, catch it, <a data-link-type="dfn" href="https://web
      <li data-md>
       <p>Let <var>stableBytes</var> be a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy" id="ref-for-dfn-get-buffer-source-copy②">copy of the bytes held by the buffer</a> <var>bytes</var>.</p>
      <li data-md>
-      <p>Perform <u class="link-error" data-lt="HostEnsureCanCompileWasmBytes()" title="LINK ERROR: No &apos;abstract-op&apos; refs found for &apos;HostEnsureCanCompileWasmBytes()&apos;.">HostEnsureCanCompileWasmBytes()</u></p>
+      <p>Perform <a data-link-type="abstract-op" href="#abstract-opdef-hostensurecancompilewasmbytes" id="ref-for-abstract-opdef-hostensurecancompilewasmbytes①">HostEnsureCanCompileWasmBytes()</a></p>
      <li data-md>
       <p><a data-link-type="dfn" href="#asynchronously-compile-a-webassembly-module" id="ref-for-asynchronously-compile-a-webassembly-module①">Asynchronously compile a WebAssembly module</a> from <var>stableBytes</var> and let <var>promiseOfModule</var> be the result.</p>
      <li data-md>
@@ -3432,7 +3435,16 @@ The particular exception here is implementation-defined in both cases.</p>
 
     <p>See <a href="https://github.com/WebAssembly/spec/issues/879">Issue 879</a> for further discussion.</p>
    </div>
-   <h2 class="heading settled" data-level="7" id="limits"><span class="secno">7. </span><span class="content">Implementation-defined Limits</span><a class="self-link" href="#limits"></a></h2>
+   <h2 class="heading settled" data-level="7" id="implementation-defined-operations"><span class="secno">7. </span><span class="content">Implementation-defined Operations</span><a class="self-link" href="#implementation-defined-operations"></a></h2>
+   <h3 class="heading settled" data-level="7.1" id="host-ensure-can-compile-wasm-bytes"><span class="secno">7.1. </span><span class="content">HostEnsureCanCompileWasmBytes()</span><a class="self-link" href="#host-ensure-can-compile-wasm-bytes"></a></h3>
+   <p><dfn class="dfn-paneled" data-dfn-type="abstract-op" data-export id="abstract-opdef-hostensurecancompilewasmbytes">HostEnsureCanCompileWasmBytes()</dfn> is an implementation-defined abstract operation
+that allows host environments to block certain WebAssembly functions which
+compile bytes into WebAssembly code.</p>
+   <p>An implementation of HostEnsureCanCompileWasmBytes may complete normally or
+abruptly. Any abrupt completions will be propagated to its callers. The default
+implementation of HostEnsureCanCompileWasmBytes is to unconditionally return an
+empty normal completion.</p>
+   <h2 class="heading settled" data-level="8" id="limits"><span class="secno">8. </span><span class="content">Implementation-defined Limits</span><a class="self-link" href="#limits"></a></h2>
    <p>The WebAssembly core specification allows an implementation to define limits on the syntactic structure of the module.
 While each embedding of WebAssembly may choose to define its own limits, for predictability the standard WebAssembly JavaScript Interface described in this document defines the following exact limits.
 An implementation must reject a module that exceeds one of the following limits with a <code class="idl"><a data-link-type="idl" href="#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror④">CompileError</a></code>.
@@ -3468,14 +3480,14 @@ In practice, an implementation may run out of resources for valid modules below 
     <li>The maximum size of a 32-bit memory is 65,536 pages (4 GiB).
     <li>The maximum size of a 64-bit memory is 262,144 pages (16 GiB).
    </ul>
-   <h2 class="heading settled" data-level="8" id="security-considerations"><span class="secno">8. </span><span class="content">Security and Privacy Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <h2 class="heading settled" data-level="9" id="security-considerations"><span class="secno">9. </span><span class="content">Security and Privacy Considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p><em>This section is non-normative.</em></p>
    <p>This document defines a host environment for WebAssembly. It enables a WebAssembly instance to <a data-link-type="dfn" href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-import" id="ref-for-syntax-import">import</a> JavaScript objects and functions from an <a data-link-type="dfn" href="#read-the-imports" id="ref-for-read-the-imports②">import object</a>, but otherwise provides no access to the embedding environment. Thus a WebAssembly instance is bound to the same constraints as JavaScript.</p>
-   <h2 class="heading settled" data-level="9" id="change-history"><span class="secno">9. </span><span class="content">Change History</span><a class="self-link" href="#change-history"></a></h2>
+   <h2 class="heading settled" data-level="10" id="change-history"><span class="secno">10. </span><span class="content">Change History</span><a class="self-link" href="#change-history"></a></h2>
    <p><em>This section is non-normative.</em></p>
    <p>Since the original release 1.0 of the WebAssembly specification, a number of proposals for extensions have been integrated.
 The following sections provide an overview of what has changed.</p>
-   <h3 class="heading settled" data-level="9.1" id="release-20"><span class="secno">9.1. </span><span class="content">Release 2.0</span><a class="self-link" href="#release-20"></a></h3>
+   <h3 class="heading settled" data-level="10.1" id="release-20"><span class="secno">10.1. </span><span class="content">Release 2.0</span><a class="self-link" href="#release-20"></a></h3>
    <h4 class="no-toc heading settled" id="changes-multivalue">Multiple Values<a class="self-link" href="#changes-multivalue"></a></h4>
    
 Multiple values can be returned to and from JavaScript functions as an <a data-link-type="dfn" href="https://tc39.github.io/ecma262/#sec-array-exotic-objects" id="ref-for-sec-array-exotic-objects">Array</a> object.
@@ -3496,7 +3508,7 @@ JavaScript values can be passed to and from WebAssembly (via imported or exporte
 Multiple tables can be exported and imported to and from JavaScript.
 
 
-   <h3 class="heading settled" data-level="9.2" id="release-30"><span class="secno">9.2. </span><span class="content">Release 3.0</span><a class="self-link" href="#release-30"></a></h3>
+   <h3 class="heading settled" data-level="10.2" id="release-30"><span class="secno">10.2. </span><span class="content">Release 3.0</span><a class="self-link" href="#release-30"></a></h3>
    <h4 class="no-toc heading settled" id="changes-multimemory">Multiple Memories<a class="self-link" href="#changes-multimemory"></a></h4>
    
 Multiple memories can be exported and imported to and from JavaScript.
@@ -3662,6 +3674,7 @@ Multiple memories can be exported and imported to and from JavaScript.
    <li><a href="#dom-table-grow">grow(delta, value)</a><span>, in § 5.4</span>
    <li><a href="#grow-the-memory-buffer">grow the memory buffer</a><span>, in § 5.3</span>
    <li><a href="#hasproperty-internal-method-of-an-exported-gc-object">[[HasProperty]] internal method of an Exported GC Object</a><span>, in § 5.8</span>
+   <li><a href="#abstract-opdef-hostensurecancompilewasmbytes">HostEnsureCanCompileWasmBytes()</a><span>, in § 7.1</span>
    <li><a href="#host-value-cache">Host value cache</a><span>, in § 4.2</span>
    <li>
     "i32"
@@ -4565,6 +4578,7 @@ let dfnPanelData = {
 "aab848f2": {"dfnID":"aab848f2","dfnText":"table_size","external":true,"refSections":[{"refs":[{"id":"ref-for-embed-table-size"},{"id":"ref-for-embed-table-size\u2460"}],"title":"5.4. Tables"}],"url":"https://webassembly.github.io/spec/core/appendix/embedding.html#embed-table-size"},
 "ab79fc0f": {"dfnID":"ab79fc0f","dfnText":"table_type","external":true,"refSections":[{"refs":[{"id":"ref-for-embed-table-type"},{"id":"ref-for-embed-table-type\u2460"},{"id":"ref-for-embed-table-type\u2461"},{"id":"ref-for-embed-table-type\u2462"}],"title":"5.4. Tables"}],"url":"https://webassembly.github.io/spec/core/appendix/embedding.html#embed-table-type"},
 "abf85593": {"dfnID":"abf85593","dfnText":"Get","external":true,"refSections":[{"refs":[{"id":"ref-for-sec-get-o-p"},{"id":"ref-for-sec-get-o-p\u2460"}],"title":"5. The WebAssembly Namespace"}],"url":"https://tc39.es/ecma262/multipage/abstract-operations.html#sec-get-o-p"},
+"abstract-opdef-hostensurecancompilewasmbytes": {"dfnID":"abstract-opdef-hostensurecancompilewasmbytes","dfnText":"HostEnsureCanCompileWasmBytes()","external":false,"refSections":[{"refs":[{"id":"ref-for-abstract-opdef-hostensurecancompilewasmbytes"},{"id":"ref-for-abstract-opdef-hostensurecancompilewasmbytes\u2460"}],"title":"5. The WebAssembly Namespace"}],"url":"#abstract-opdef-hostensurecancompilewasmbytes"},
 "acea0ba2": {"dfnID":"acea0ba2","dfnText":"tag (for external value)","external":true,"refSections":[{"refs":[{"id":"ref-for-syntax-externval"},{"id":"ref-for-syntax-externval\u2460"},{"id":"ref-for-syntax-externval\u2461"},{"id":"ref-for-syntax-externval\u2462"},{"id":"ref-for-syntax-externval\u2463"},{"id":"ref-for-syntax-externval\u2464"},{"id":"ref-for-syntax-externval\u2465"},{"id":"ref-for-syntax-externval\u2466"},{"id":"ref-for-syntax-externval\u2467"},{"id":"ref-for-syntax-externval\u2468"},{"id":"ref-for-syntax-externval\u2460\u24ea"},{"id":"ref-for-syntax-externval\u2460\u2460"},{"id":"ref-for-syntax-externval\u2460\u2461"},{"id":"ref-for-syntax-externval\u2460\u2462"},{"id":"ref-for-syntax-externval\u2460\u2463"},{"id":"ref-for-syntax-externval\u2460\u2464"},{"id":"ref-for-syntax-externval\u2460\u2465"},{"id":"ref-for-syntax-externval\u2460\u2466"},{"id":"ref-for-syntax-externval\u2460\u2467"}],"title":"5. The WebAssembly Namespace"}],"url":"https://webassembly.github.io/spec/core/exec/runtime.html#syntax-externval"},
 "addressvaluetou64": {"dfnID":"addressvaluetou64","dfnText":"AddressValueToU64","external":false,"refSections":[{"refs":[{"id":"ref-for-addressvaluetou64"},{"id":"ref-for-addressvaluetou64\u2460"},{"id":"ref-for-addressvaluetou64\u2461"}],"title":"5.3. Memories"},{"refs":[{"id":"ref-for-addressvaluetou64\u2462"},{"id":"ref-for-addressvaluetou64\u2463"},{"id":"ref-for-addressvaluetou64\u2464"},{"id":"ref-for-addressvaluetou64\u2465"},{"id":"ref-for-addressvaluetou64\u2466"}],"title":"5.4. Tables"}],"url":"#addressvaluetou64"},
 "ae59bd82": {"dfnID":"ae59bd82","dfnText":"store","external":true,"refSections":[{"refs":[{"id":"ref-for-syntax-store"}],"title":"4.1. Interaction of the WebAssembly Store with JavaScript"}],"url":"https://webassembly.github.io/spec/core/exec/runtime.html#syntax-store"},
@@ -4746,16 +4760,16 @@ let dfnPanelData = {
 "enumdef-valuetype": {"dfnID":"enumdef-valuetype","dfnText":"ValueType","external":false,"refSections":[{"refs":[{"id":"ref-for-enumdef-valuetype"}],"title":"5.5. Globals"},{"refs":[{"id":"ref-for-enumdef-valuetype\u2460"}],"title":"5.7.1. Tag types"}],"url":"#enumdef-valuetype"},
 "exception": {"dfnID":"exception","dfnText":"Exception","external":false,"refSections":[{"refs":[{"id":"ref-for-exception"}],"title":"4.2. WebAssembly JS Object Caches"},{"refs":[{"id":"ref-for-exception\u2460"}],"title":"5.6. Exported Functions"},{"refs":[{"id":"ref-for-exception\u2461"},{"id":"ref-for-exception\u2462"}],"title":"5.9. Exceptions"}],"url":"#exception"},
 "exception-object-cache": {"dfnID":"exception-object-cache","dfnText":"Exception object cache","external":false,"refSections":[{"refs":[{"id":"ref-for-exception-object-cache"},{"id":"ref-for-exception-object-cache\u2460"}],"title":"5.9. Exceptions"}],"url":"#exception-object-cache"},
-"exceptiondef-compileerror": {"dfnID":"exceptiondef-compileerror","dfnText":"CompileError","external":false,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-compileerror"},{"id":"ref-for-exceptiondef-compileerror\u2460"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-exceptiondef-compileerror\u2461"}],"title":"5.1. Modules"},{"refs":[{"id":"ref-for-exceptiondef-compileerror\u2462"}],"title":"5.10. Error Objects"},{"refs":[{"id":"ref-for-exceptiondef-compileerror\u2463"}],"title":"7. Implementation-defined Limits"}],"url":"#exceptiondef-compileerror"},
+"exceptiondef-compileerror": {"dfnID":"exceptiondef-compileerror","dfnText":"CompileError","external":false,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-compileerror"},{"id":"ref-for-exceptiondef-compileerror\u2460"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-exceptiondef-compileerror\u2461"}],"title":"5.1. Modules"},{"refs":[{"id":"ref-for-exceptiondef-compileerror\u2462"}],"title":"5.10. Error Objects"},{"refs":[{"id":"ref-for-exceptiondef-compileerror\u2463"}],"title":"8. Implementation-defined Limits"}],"url":"#exceptiondef-compileerror"},
 "exceptiondef-linkerror": {"dfnID":"exceptiondef-linkerror","dfnText":"LinkError","external":false,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-linkerror"},{"id":"ref-for-exceptiondef-linkerror\u2460"},{"id":"ref-for-exceptiondef-linkerror\u2461"},{"id":"ref-for-exceptiondef-linkerror\u2462"},{"id":"ref-for-exceptiondef-linkerror\u2463"},{"id":"ref-for-exceptiondef-linkerror\u2464"},{"id":"ref-for-exceptiondef-linkerror\u2465"},{"id":"ref-for-exceptiondef-linkerror\u2466"},{"id":"ref-for-exceptiondef-linkerror\u2467"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-exceptiondef-linkerror\u2468"}],"title":"5.10. Error Objects"}],"url":"#exceptiondef-linkerror"},
-"exceptiondef-runtimeerror": {"dfnID":"exceptiondef-runtimeerror","dfnText":"RuntimeError","external":false,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-runtimeerror"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-exceptiondef-runtimeerror\u2460"}],"title":"5.6. Exported Functions"},{"refs":[{"id":"ref-for-exceptiondef-runtimeerror\u2461"}],"title":"5.10. Error Objects"},{"refs":[{"id":"ref-for-exceptiondef-runtimeerror\u2462"}],"title":"7. Implementation-defined Limits"}],"url":"#exceptiondef-runtimeerror"},
+"exceptiondef-runtimeerror": {"dfnID":"exceptiondef-runtimeerror","dfnText":"RuntimeError","external":false,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-runtimeerror"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-exceptiondef-runtimeerror\u2460"}],"title":"5.6. Exported Functions"},{"refs":[{"id":"ref-for-exceptiondef-runtimeerror\u2461"}],"title":"5.10. Error Objects"},{"refs":[{"id":"ref-for-exceptiondef-runtimeerror\u2462"}],"title":"8. Implementation-defined Limits"}],"url":"#exceptiondef-runtimeerror"},
 "exported-function": {"dfnID":"exported-function","dfnText":"Exported Function","external":false,"refSections":[{"refs":[{"id":"ref-for-exported-function"}],"title":"4.2. WebAssembly JS Object Caches"},{"refs":[{"id":"ref-for-exported-function\u2460"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-exported-function\u2461"}],"title":"5.6. Exported Functions"}],"url":"#exported-function"},
 "exported-function-cache": {"dfnID":"exported-function-cache","dfnText":"Exported Function cache","external":false,"refSections":[{"refs":[{"id":"ref-for-exported-function-cache"}],"title":"5.6. Exported Functions"}],"url":"#exported-function-cache"},
 "exported-gc-object": {"dfnID":"exported-gc-object","dfnText":"Exported GC Object","external":false,"refSections":[{"refs":[{"id":"ref-for-exported-gc-object"}],"title":"4.2. WebAssembly JS Object Caches"},{"refs":[{"id":"ref-for-exported-gc-object\u2460"}],"title":"5.6. Exported Functions"},{"refs":[{"id":"ref-for-exported-gc-object\u2461"},{"id":"ref-for-exported-gc-object\u2462"},{"id":"ref-for-exported-gc-object\u2463"},{"id":"ref-for-exported-gc-object\u2464"}],"title":"5.8. Garbage Collected Objects"}],"url":"#exported-gc-object"},
 "exported-gc-object-cache": {"dfnID":"exported-gc-object-cache","dfnText":"Exported GC Object cache","external":false,"refSections":[{"refs":[{"id":"ref-for-exported-gc-object-cache"}],"title":"5.8. Garbage Collected Objects"}],"url":"#exported-gc-object-cache"},
 "f02cd417": {"dfnID":"f02cd417","dfnText":"iterate (for list)","external":true,"refSections":[{"refs":[{"id":"ref-for-list-iterate"},{"id":"ref-for-list-iterate\u2460"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-list-iterate\u2461"},{"id":"ref-for-list-iterate\u2462"},{"id":"ref-for-list-iterate\u2463"}],"title":"5.1. Modules"},{"refs":[{"id":"ref-for-list-iterate\u2464"},{"id":"ref-for-list-iterate\u2465"},{"id":"ref-for-list-iterate\u2466"}],"title":"5.6. Exported Functions"},{"refs":[{"id":"ref-for-list-iterate\u2467"}],"title":"5.7.1. Tag types"},{"refs":[{"id":"ref-for-list-iterate\u2468"}],"title":"5.9. Exceptions"},{"refs":[{"id":"ref-for-list-iterate\u2460\u24ea"}],"title":"5.10. Error Objects"}],"url":"https://infra.spec.whatwg.org/#list-iterate"},
 "f06ddd8a": {"dfnID":"f06ddd8a","dfnText":"memaddrs","external":true,"refSections":[{"refs":[{"id":"ref-for-syntax-moduleinst"},{"id":"ref-for-syntax-moduleinst\u2460"}],"title":"5.3. Memories"}],"url":"https://webassembly.github.io/spec/core/exec/runtime.html#syntax-moduleinst"},
-"f0c8810c": {"dfnID":"f0c8810c","dfnText":"import","external":true,"refSections":[{"refs":[{"id":"ref-for-syntax-import"}],"title":"8. Security and Privacy Considerations"}],"url":"https://webassembly.github.io/spec/core/syntax/modules.html#syntax-import"},
+"f0c8810c": {"dfnID":"f0c8810c","dfnText":"import","external":true,"refSections":[{"refs":[{"id":"ref-for-syntax-import"}],"title":"9. Security and Privacy Considerations"}],"url":"https://webassembly.github.io/spec/core/syntax/modules.html#syntax-import"},
 "f14ed351": {"dfnID":"f14ed351","dfnText":"upon rejection","external":true,"refSections":[{"refs":[{"id":"ref-for-upon-rejection"},{"id":"ref-for-upon-rejection\u2460"}],"title":"5. The WebAssembly Namespace"}],"url":"https://webidl.spec.whatwg.org/#upon-rejection"},
 "f17862f0": {"dfnID":"f17862f0","dfnText":"ArrayBuffer","external":true,"refSections":[{"refs":[{"id":"ref-for-sec-arraybuffer-objects"},{"id":"ref-for-sec-arraybuffer-objects\u2460"}],"title":"5.1. Modules"},{"refs":[{"id":"ref-for-sec-arraybuffer-objects\u2461"},{"id":"ref-for-sec-arraybuffer-objects\u2462"},{"id":"ref-for-sec-arraybuffer-objects\u2463"},{"id":"ref-for-sec-arraybuffer-objects\u2464"},{"id":"ref-for-sec-arraybuffer-objects\u2465"},{"id":"ref-for-sec-arraybuffer-objects\u2466"},{"id":"ref-for-sec-arraybuffer-objects\u2467"},{"id":"ref-for-sec-arraybuffer-objects\u2468"}],"title":"5.3. Memories"}],"url":"https://tc39.github.io/ecma262/#sec-arraybuffer-objects"},
 "f256859a": {"dfnID":"f256859a","dfnText":"UTF-8 decode without BOM or fail","external":true,"refSections":[{"refs":[{"id":"ref-for-utf-8-decode-without-bom-or-fail"}],"title":"5.1. Modules"}],"url":"https://encoding.spec.whatwg.org/#utf-8-decode-without-bom-or-fail"},
@@ -4801,7 +4815,7 @@ let dfnPanelData = {
 "namespacedef-webassembly": {"dfnID":"namespacedef-webassembly","dfnText":"WebAssembly","external":false,"refSections":[{"refs":[{"id":"ref-for-namespacedef-webassembly"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2460"}],"title":"5.1. Modules"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2461"}],"title":"5.2. Instances"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2462"}],"title":"5.3. Memories"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2463"}],"title":"5.4. Tables"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2464"}],"title":"5.5. Globals"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2465"}],"title":"5.7.1. Tag types"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2466"}],"title":"5.9. Exceptions"},{"refs":[{"id":"ref-for-namespacedef-webassembly\u2467"},{"id":"ref-for-namespacedef-webassembly\u2468"}],"title":"5.10. Error Objects"}],"url":"#namespacedef-webassembly"},
 "ownpropertykeys-internal-method-of-an-exported-gc-object": {"dfnID":"ownpropertykeys-internal-method-of-an-exported-gc-object","dfnText":"[[OwnPropertyKeys]] internal method of an Exported GC Object","external":false,"refSections":[{"refs":[{"id":"ref-for-ownpropertykeys-internal-method-of-an-exported-gc-object"}],"title":"5.8. Garbage Collected Objects"}],"url":"#ownpropertykeys-internal-method-of-an-exported-gc-object"},
 "preventextensions-internal-method-of-an-exported-gc-object": {"dfnID":"preventextensions-internal-method-of-an-exported-gc-object","dfnText":"[[PreventExtensions]] internal method of an Exported GC Object","external":false,"refSections":[{"refs":[{"id":"ref-for-preventextensions-internal-method-of-an-exported-gc-object"}],"title":"5.8. Garbage Collected Objects"}],"url":"#preventextensions-internal-method-of-an-exported-gc-object"},
-"read-the-imports": {"dfnID":"read-the-imports","dfnText":"read the imports","external":false,"refSections":[{"refs":[{"id":"ref-for-read-the-imports"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-read-the-imports\u2460"}],"title":"5.2. Instances"},{"refs":[{"id":"ref-for-read-the-imports\u2461"}],"title":"8. Security and Privacy Considerations"}],"url":"#read-the-imports"},
+"read-the-imports": {"dfnID":"read-the-imports","dfnText":"read the imports","external":false,"refSections":[{"refs":[{"id":"ref-for-read-the-imports"}],"title":"5. The WebAssembly Namespace"},{"refs":[{"id":"ref-for-read-the-imports\u2460"}],"title":"5.2. Instances"},{"refs":[{"id":"ref-for-read-the-imports\u2461"}],"title":"9. Security and Privacy Considerations"}],"url":"#read-the-imports"},
 "refresh-the-memory-buffer": {"dfnID":"refresh-the-memory-buffer","dfnText":"refresh the Memory buffer","external":false,"refSections":[{"refs":[{"id":"ref-for-refresh-the-memory-buffer"},{"id":"ref-for-refresh-the-memory-buffer\u2460"}],"title":"5.3. Memories"}],"url":"#refresh-the-memory-buffer"},
 "retrieving-a-host-value": {"dfnID":"retrieving-a-host-value","dfnText":"retrieving a host value","external":false,"refSections":[{"refs":[{"id":"ref-for-retrieving-a-host-value"},{"id":"ref-for-retrieving-a-host-value\u2460"}],"title":"5.6. Exported Functions"}],"url":"#retrieving-a-host-value"},
 "run-a-host-function": {"dfnID":"run-a-host-function","dfnText":"run a host function","external":false,"refSections":[{"refs":[{"id":"ref-for-run-a-host-function"}],"title":"5.6. Exported Functions"}],"url":"#run-a-host-function"},
@@ -5208,6 +5222,7 @@ function genLinkingSyntaxes(dfn) {
 let refsData = {
 "#a-new-exported-function": {"displayText":"a new exported function","export":true,"for_":[],"level":"2","normative":true,"shortname":"wasm-js-api","spec":"wasm-js-api-2","status":"local","text":"a new exported function","type":"dfn","url":"#a-new-exported-function"},
 "#a-new-exported-gc-object": {"displayText":"a new exported gc object","export":true,"for_":[],"level":"2","normative":true,"shortname":"wasm-js-api","spec":"wasm-js-api-2","status":"local","text":"a new exported gc object","type":"dfn","url":"#a-new-exported-gc-object"},
+"#abstract-opdef-hostensurecancompilewasmbytes": {"displayText":"HostEnsureCanCompileWasmBytes()","export":true,"for_":[],"level":"2","normative":true,"shortname":"wasm-js-api","spec":"wasm-js-api-2","status":"local","text":"HostEnsureCanCompileWasmBytes()","type":"abstract-op","url":"#abstract-opdef-hostensurecancompilewasmbytes"},
 "#addressvaluetou64": {"displayText":"addressvaluetou64","export":true,"for_":[],"level":"2","normative":true,"shortname":"wasm-js-api","spec":"wasm-js-api-2","status":"local","text":"addressvaluetou64","type":"dfn","url":"#addressvaluetou64"},
 "#associated-store": {"displayText":"associated store","export":true,"for_":[],"level":"2","normative":true,"shortname":"wasm-js-api","spec":"wasm-js-api-2","status":"local","text":"associated store","type":"dfn","url":"#associated-store"},
 "#asynchronously-compile-a-webassembly-module": {"displayText":"asynchronously compile a webassembly module","export":true,"for_":[],"level":"2","normative":true,"shortname":"wasm-js-api","spec":"wasm-js-api-2","status":"local","text":"asynchronously compile a webassembly module","type":"dfn","url":"#asynchronously-compile-a-webassembly-module"},

@@ -6,7 +6,7 @@
   <meta content="ED" name="w3c-status">
   <meta content="Bikeshed version 7a96e07ec, updated Mon Jul 14 11:12:36 2025 -0700" name="generator">
   <link href="https://www.w3.org/TR/wasm-web-api-2/" rel="canonical">
-  <meta content="cfa86738f6feae9c4d1a9bd95ff1c9fab28c5aa5" name="revision">
+  <meta content="893da3bce56fbdf971e699495bd210a60f07e1bb" name="revision">
   <meta content="dark light" name="color-scheme">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
@@ -909,11 +909,6 @@ To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="compile-a-pote
        <li data-md>
         <p>If <var>response</var>’s <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-response-status" id="ref-for-concept-response-status">status</a> is not an <a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#ok-status" id="ref-for-ok-status①">ok status</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#reject" id="ref-for-reject①">reject</a> <var>returnValue</var> with a <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-native-error-types-used-in-this-standard-typeerror" id="ref-for-sec-native-error-types-used-in-this-standard-typeerror④">TypeError</a></code> and abort these substeps.</p>
        <li data-md>
-        <p>Perform <u class="link-error" data-lt="HostEnsureCanCompileWasmBytes()" title="LINK ERROR: No &apos;abstract-op&apos; refs found for &apos;HostEnsureCanCompileWasmBytes()&apos;.">HostEnsureCanCompileWasmBytes()</u>.</p>
-      </ol>
-      <p class="note" role="note"><span class="marker">Note:</span> This operation terminates with a <code class="idl"><a data-link-type="idl" href="https://webassembly.github.io/spec/js-api/#exceptiondef-compileerror" id="ref-for-exceptiondef-compileerror①">CompileError</a></code> exception if the operation is not permitted.</p>
-      <ol>
-       <li data-md>
         <p><a data-link-type="dfn" href="https://fetch.spec.whatwg.org/#concept-body-consume-body" id="ref-for-concept-body-consume-body">consume</a> <var>response</var>’s body as an <code class="idl"><a data-link-type="idl" href="https://tc39.github.io/ecma262/#sec-arraybuffer-objects" id="ref-for-sec-arraybuffer-objects">ArrayBuffer</a></code>, and let <var>bodyPromise</var> be the result.</p>
         <p class="note" role="note"><span class="marker">Note:</span> Although it is specified here that the response is consumed entirely before compilation proceeds, that is purely for ease of specification; implementations are likely to instead perform processing in a streaming fashion. The difference is unobservable, and thus the simpler model is specified. </p>
        <li data-md>
@@ -1519,7 +1514,7 @@ let dfnPanelData = {
 "d76ab844": {"dfnID":"d76ab844","dfnText":"sub-serialization","external":true,"refSections":[{"refs":[{"id":"ref-for-sub-serialization"}],"title":"3. Serialization"}],"url":"https://html.spec.whatwg.org/multipage/structured-data.html#sub-serialization"},
 "dacde8b5": {"dfnID":"dacde8b5","dfnText":"a new promise","external":true,"refSections":[{"refs":[{"id":"ref-for-a-new-promise"}],"title":"2. Streaming Module Compilation and Instantiation"}],"url":"https://webidl.spec.whatwg.org/#a-new-promise"},
 "dca2de17": {"dfnID":"dca2de17","dfnText":"DOMException","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-DOMException"},{"id":"ref-for-idl-DOMException\u2460"}],"title":"3. Serialization"}],"url":"https://webidl.spec.whatwg.org/#idl-DOMException"},
-"dd57410d": {"dfnID":"dd57410d","dfnText":"CompileError","external":true,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-compileerror"},{"id":"ref-for-exceptiondef-compileerror\u2460"}],"title":"2. Streaming Module Compilation and Instantiation"}],"url":"https://webassembly.github.io/spec/js-api/#exceptiondef-compileerror"},
+"dd57410d": {"dfnID":"dd57410d","dfnText":"CompileError","external":true,"refSections":[{"refs":[{"id":"ref-for-exceptiondef-compileerror"}],"title":"2. Streaming Module Compilation and Instantiation"}],"url":"https://webassembly.github.io/spec/js-api/#exceptiondef-compileerror"},
 "dom-webassembly-compilestreaming": {"dfnID":"dom-webassembly-compilestreaming","dfnText":"compileStreaming(source)","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-webassembly-compilestreaming"}],"title":"2. Streaming Module Compilation and Instantiation"}],"url":"#dom-webassembly-compilestreaming"},
 "dom-webassembly-compilestreaming-source-source": {"dfnID":"dom-webassembly-compilestreaming-source-source","dfnText":"source","external":false,"refSections":[],"url":"#dom-webassembly-compilestreaming-source-source"},
 "dom-webassembly-instantiatestreaming": {"dfnID":"dom-webassembly-instantiatestreaming","dfnText":"instantiateStreaming(source, importObject)","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-webassembly-instantiatestreaming"}],"title":"2. Streaming Module Compilation and Instantiation"}],"url":"#dom-webassembly-instantiatestreaming"},
