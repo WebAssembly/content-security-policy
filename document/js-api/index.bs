@@ -594,7 +594,6 @@ interface Module {
     The <dfn constructor for="Module">Module(|bytes|)</dfn> constructor, when invoked, performs the following steps:
 
     1. Let |stableBytes| be a [=get a copy of the buffer source|copy of the bytes held by the buffer=] |bytes|.
-    1. Perform [$HostEnsureCanCompileWasmBytes(bytes)|HostEnsureCanCompileWasmBytes(stableBytes)$]
     1. [=Compile a WebAssembly module|Compile the WebAssembly module=] |stableBytes| and store the result as |module|.
     1. If |module| is [=error=], throw a {{CompileError}} exception.
     1. Set **this**.\[[Module]] to |module|.
