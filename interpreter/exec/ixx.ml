@@ -1,10 +1,11 @@
 exception Overflow
 exception DivideByZero
-exception InvalidConversion
 
 module type RepType =
 sig
   type t
+
+  val bitwidth : int
 
   val zero : t
   val one : t
@@ -34,14 +35,14 @@ sig
   val to_int64 : t -> int64
   val to_string : t -> string
   val to_hex_string : t -> string
-
-  val bitwidth : int
 end
 
-module type S =
+module type T =
 sig
   type t
   type bits
+
+  val bitwidth : int
 
   val of_bits : bits -> t
   val to_bits : t -> bits
@@ -54,10 +55,10 @@ sig
   val add : t -> t -> t
   val sub : t -> t -> t
   val mul : t -> t -> t
-  val div_s : t -> t -> t (* raises IntegerDivideByZero, IntegerOverflow *)
-  val div_u : t -> t -> t (* raises IntegerDivideByZero *)
-  val rem_s : t -> t -> t (* raises IntegerDivideByZero *)
-  val rem_u : t -> t -> t (* raises IntegerDivideByZero *)
+  val div_s : t -> t -> t (* raises DivideByZero, Overflow *)
+  val div_u : t -> t -> t (* raises DivideByZero *)
+  val rem_s : t -> t -> t (* raises DivideByZero *)
+  val rem_u : t -> t -> t (* raises DivideByZero *)
   val avgr_u : t -> t -> t
   val and_ : t -> t -> t
   val or_ : t -> t -> t
@@ -106,7 +107,7 @@ sig
   val to_hex_string : t -> string
 end
 
-module Make (Rep : RepType) : S with type bits = Rep.t and type t = Rep.t =
+module Make (Rep : RepType) : T with type bits = Rep.t and type t = Rep.t =
 struct
   (*
    * Unsigned comparison in terms of signed comparison.
@@ -132,6 +133,8 @@ struct
 
   type t = Rep.t
   type bits = Rep.t
+
+  let bitwidth = Rep.bitwidth
 
   let of_bits x = x
   let to_bits x = x

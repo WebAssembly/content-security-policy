@@ -1,4 +1,4 @@
-.. index:: value, integer, floating-point, bit width, determinism, NaN
+.. index:: value, integer, floating-point, bit width, determinism, non-determinism, NaN
 .. _exec-op-partial:
 .. _exec-numeric:
 
@@ -88,8 +88,8 @@ Conventions:
 
     .. math::
        \begin{array}{lll@{\qquad}l}
-       \satu_N(i) &=& 2^N-1 & (\iff i > 2^N-1)\\
        \satu_N(i) &=& 0 & (\iff i < 0) \\
+       \satu_N(i) &=& 2^N-1 & (\iff i > 2^N-1)\\
        \satu_N(i) &=& i & (\otherwise) \\
        \end{array}
 
@@ -97,14 +97,14 @@ Conventions:
 
   .. math::
      \begin{array}{lll@{\qquad}l}
-     \sats_N(i) &=& \signed_N^{-1}(-2^{N-1}) & (\iff i < -2^{N-1})\\
-     \sats_N(i) &=& \signed_N^{-1}(2^{N-1}-1) & (\iff i > 2^{N-1}-1)\\
+     \sats_N(i) &=& -2^{N-1} & (\iff i < -2^{N-1})\\
+     \sats_N(i) &=& 2^{N-1}-1 & (\iff i > 2^{N-1}-1)\\
      \sats_N(i) &=& i & (\otherwise)
      \end{array}
 
 
 
-.. index:: bit, integer, floating-point, numeric vector
+.. index:: bit, integer, floating-point, numeric vector, packed type, value type
 .. _aux-bits:
 
 Representations
@@ -118,6 +118,8 @@ Numbers and numeric vectors have an underlying binary representation as a sequen
    \bits_{\FN}(z) &=& \fbits_N(z) \\
    \bits_{\VN}(i) &=& \ibits_N(i) \\
    \end{array}
+
+The first case of these applies to representations of both integer :ref:`value types <syntax-valtype>` and :ref:`packed types <syntax-packedtype>`.
 
 Each of these functions is a bijection, hence they are invertible.
 
@@ -234,7 +236,7 @@ This function is bijective, and hence invertible.
 
 
 .. index:: Boolean
-.. _aux-bool:
+.. _aux-tobool:
 
 Boolean Interpretation
 ......................
@@ -243,8 +245,8 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{lll@{\qquad}l}
-   \bool(C) &=& 1 & (\iff C) \\
-   \bool(C) &=& 0 & (\otherwise) \\
+   \tobool(C) &=& 1 & (\iff C) \\
+   \tobool(C) &=& 0 & (\otherwise) \\
    \end{array}
 
 
@@ -561,7 +563,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \ieqz_N(i) &=& \bool(i = 0)
+   \ieqz_N(i) &=& \tobool(i = 0)
    \end{array}
 
 
@@ -574,7 +576,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \ieq_N(i_1, i_2) &=& \bool(i_1 = i_2)
+   \ieq_N(i_1, i_2) &=& \tobool(i_1 = i_2)
    \end{array}
 
 
@@ -587,7 +589,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \ine_N(i_1, i_2) &=& \bool(i_1 \neq i_2)
+   \ine_N(i_1, i_2) &=& \tobool(i_1 \neq i_2)
    \end{array}
 
 
@@ -600,7 +602,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \iltu_N(i_1, i_2) &=& \bool(i_1 < i_2)
+   \iltu_N(i_1, i_2) &=& \tobool(i_1 < i_2)
    \end{array}
 
 
@@ -617,7 +619,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \ilts_N(i_1, i_2) &=& \bool(\signed_N(i_1) < \signed_N(i_2))
+   \ilts_N(i_1, i_2) &=& \tobool(\signed_N(i_1) < \signed_N(i_2))
    \end{array}
 
 
@@ -630,7 +632,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \igtu_N(i_1, i_2) &=& \bool(i_1 > i_2)
+   \igtu_N(i_1, i_2) &=& \tobool(i_1 > i_2)
    \end{array}
 
 
@@ -647,7 +649,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \igts_N(i_1, i_2) &=& \bool(\signed_N(i_1) > \signed_N(i_2))
+   \igts_N(i_1, i_2) &=& \tobool(\signed_N(i_1) > \signed_N(i_2))
    \end{array}
 
 
@@ -660,7 +662,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \ileu_N(i_1, i_2) &=& \bool(i_1 \leq i_2)
+   \ileu_N(i_1, i_2) &=& \tobool(i_1 \leq i_2)
    \end{array}
 
 
@@ -677,7 +679,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \iles_N(i_1, i_2) &=& \bool(\signed_N(i_1) \leq \signed_N(i_2))
+   \iles_N(i_1, i_2) &=& \tobool(\signed_N(i_1) \leq \signed_N(i_2))
    \end{array}
 
 
@@ -690,7 +692,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \igeu_N(i_1, i_2) &=& \bool(i_1 \geq i_2)
+   \igeu_N(i_1, i_2) &=& \tobool(i_1 \geq i_2)
    \end{array}
 
 
@@ -707,7 +709,7 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 .. math::
    \begin{array}{@{}lcll}
-   \iges_N(i_1, i_2) &=& \bool(\signed_N(i_1) \geq \signed_N(i_2))
+   \iges_N(i_1, i_2) &=& \tobool(\signed_N(i_1) \geq \signed_N(i_2))
    \end{array}
 
 
@@ -858,11 +860,11 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 * Let :math:`j` be the result of adding :math:`j_1` and :math:`j_2`.
 
-* Return :math:`\sats_N(j)`.
+* Return the value whose signed interpretation is :math:`\sats_N(j)`.
 
 .. math::
    \begin{array}{lll@{\qquad}l}
-   \iaddsats_N(i_1, i_2) &=& \sats_N(\signed_N(i_1) + \signed_N(i_2))
+   \iaddsats_N(i_1, i_2) &=& \signed_N^{-1}(\sats_N(\signed_N(i_1) + \signed_N(i_2)))
    \end{array}
 
 
@@ -892,11 +894,11 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 
 * Let :math:`j` be the result of subtracting :math:`j_2` from :math:`j_1`.
 
-* Return :math:`\sats_N(j)`.
+* Return the value whose signed interpretation is :math:`\sats_N(j)`.
 
 .. math::
    \begin{array}{lll@{\qquad}l}
-   \isubsats_N(i_1, i_2) &=& \sats_N(\signed_N(i_1) - \signed_N(i_2))
+   \isubsats_N(i_1, i_2) &=& \signed_N^{-1}(\sats_N(\signed_N(i_1) - \signed_N(i_2)))
    \end{array}
 
 
@@ -920,11 +922,11 @@ The integer result of predicates -- i.e., :ref:`tests <syntax-testop>` and :ref:
 :math:`\iq15mulrsats_N(i_1, i_2)`
 .................................
 
-* Return the result of :math:`\sats_N(\ishrs_N(i_1 \cdot i_2 + 2^{14}, 15))`.
+* Return the whose signed interpretation is the result of :math:`\sats_N(\ishrs_N(i_1 \cdot i_2 + 2^{14}, 15))`.
 
 .. math::
    \begin{array}{lll@{\qquad}l}
-   \iq15mulrsats_N(i_1, i_2) &=& \sats_N(\ishrs_N(i_1 \cdot i_2 + 2^{14}, 15))
+   \iq15mulrsats_N(i_1, i_2) &=& \signed_N^{-1}(\sats_N(\ishrs_N(i_1 \cdot i_2 + 2^{14}, 15)))
    \end{array}
 
 
@@ -1031,7 +1033,7 @@ where:
    \end{array}
 
 
-.. index:: NaN
+.. index:: NaN, determinism, non-determinism
 .. _aux-nans:
 
 NaN Propagation
@@ -1044,14 +1046,17 @@ then its sign is non-deterministic and the :ref:`payload <syntax-payload>` is co
 
 * Otherwise the payload is picked non-deterministically among all :ref:`arithmetic NaNs <arithmetic-nan>`; that is, its most significant bit is :math:`1` and all others are unspecified.
 
-This non-deterministic result is expressed by the following auxiliary function producing a set of allowed outputs from a set of inputs:
+* In the :ref:`deterministic profile <profile-deterministic>`, however, a positive canonical NaNs is reliably produced in the latter case.
+
+The non-deterministic result is expressed by the following auxiliary function producing a set of allowed outputs from a set of inputs:
 
 .. math::
-   \begin{array}{lll@{\qquad}l}
-   \nans_N\{z^\ast\} &=& \{ + \NAN(n), - \NAN(n) ~|~ n = \canon_N \}
-     & (\iff \forall \NAN(n) \in z^\ast,~ n = \canon_N) \\
-   \nans_N\{z^\ast\} &=& \{ + \NAN(n), - \NAN(n) ~|~ n \geq \canon_N \}
-     & (\otherwise) \\
+   \begin{array}{llcl@{\qquad}l}
+   & \nans_N\{z^\ast\} &=& \{ + \NAN(\canon_N) \} \\
+   \exprofiles{\PROFDET} & \nans_N\{z^\ast\} &=& \{ + \NAN(n), - \NAN(n) ~|~ n = \canon_N \}
+     & (\iff \{z^\ast\} \subseteq \{ + \NAN(\canon_N), - \NAN(\canon_N) \} \\
+   \exprofiles{\PROFDET} & \nans_N\{z^\ast\} &=& \{ + \NAN(n), - \NAN(n) ~|~ n \geq \canon_N \}
+     & (\iff \{z^\ast\} \not\subseteq \{ + \NAN(\canon_N), - \NAN(\canon_N) \} \\
    \end{array}
 
 
@@ -1231,6 +1236,55 @@ This non-deterministic result is expressed by the following auxiliary function p
    \fdiv_N(\pm q_1, \pm 0) &=& +\infty \\
    \fdiv_N(\pm q_1, \mp 0) &=& -\infty \\
    \fdiv_N(z_1, z_2) &=& \ieee_N(z_1 / z_2) \\
+   \end{array}
+
+
+.. _op-fma:
+
+:math:`\fma_N(z_1, z_2, z_3)`
+.............................
+
+The function :math:`\fma` is the same as *fusedMultiplyAdd* defined by |IEEE754|_ (Section 5.4.1).
+It computes :math:`(z_1 \cdot z_2) + z_3` as if with unbounded range and precision, rounding only once for the final result.
+
+* If either :math:`z_1` or :math:`z_2` or :math:`z_3` is a NaN, return an element of :math:`\nans_N{z_1, z_2, z_3}`.
+
+* Else if either :math:`z_1` or :math:`z_2` is a zero and the other is an infinity, then return an element of :math:`\nans_N\{\}`.
+
+* Else if both :math:`z_1` or :math:`z_2` are infinities of equal sign, and :math:`z_3` is a negative infinity, then return an element of :math:`\nans_N\{\}`.
+
+* Else if both :math:`z_1` or :math:`z_2` are infinities of opposite sign, and :math:`z_3` is a positive infinity, then return an element of :math:`\nans_N\{\}`.
+
+* Else if either :math:`z_1` or :math:`z_2` is an infinity and the other is a value of the same sign, and :math:`z_3` is a negative infinity, then return an element of :math:`\nans_N\{\}`.
+
+* Else if either :math:`z_1` or :math:`z_2` is an infinity and the other is a value of the opposite sign, and :math:`z_3` is a positive infinity, then return an element of :math:`\nans_N\{\}`.
+
+* Else if both :math:`z_1` and :math:`z_2` are zeroes of the same sign and :math:`z_3` is a zero, then return positive zero.
+
+* Else if both :math:`z_1` and :math:`z_2` are zeroes of the opposite sign and :math:`z_3` is a positive zero, then return positive zero.
+
+* Else if both :math:`z_1` and :math:`z_2` are zeroes of the opposite sign and :math:`z_3` is a negative zero, then return negative zero.
+
+* Else return the result of multiplying :math:`z_1` and :math:`z_2`, adding :math:`z_3` to the intermediate, and the final result ref:`rounded <aux-ieee>` to the nearest representable value.
+
+.. math::
+   \begin{array}{@{}llcll}
+   & \fma_N(\pm \NAN(n), z_2, z_3) &=& \nans_N\{\pm \NAN(n), z_2, z_3\} \\
+   & \fma_N(z_1, \pm \NAN(n), z_3) &=& \nans_N\{\pm \NAN(n), z_1, z_3\} \\
+   & \fma_N(z_1, z_2, \pm \NAN(n)) &=& \nans_N\{\pm \NAN(n), z_1, z_2\} \\
+   & \fma_N(\pm \infty, \pm 0, z_3) &=& \nans_N\{\} \\
+   & \fma_N(\pm \infty, \mp 0, z_3) &=& \nans_N\{\} \\
+   & \fma_N(\pm \infty, \pm \infty, - \infty) &=& \nans_N\{\} \\
+   & \fma_N(\pm \infty, \mp \infty, + \infty) &=& \nans_N\{\} \\
+   & \fma_N(\pm q_1, \pm \infty, - \infty) &=& \nans_N\{\} \\
+   & \fma_N(\pm q_1, \mp \infty, + \infty) &=& \nans_N\{\} \\
+   & \fma_N(\pm \infty, \pm q_1, - \infty) &=& \nans_N\{\} \\
+   & \fma_N(\mp \infty, \pm q_1, + \infty) &=& \nans_N\{\} \\
+   & \fma_N(\pm 0, \pm 0, \mp 0) &=& + 0 \\
+   & \fma_N(\pm 0, \pm 0, \pm 0) &=& + 0 \\
+   & \fma_N(\pm 0, \mp 0, + 0) &=& + 0 \\
+   & \fma_N(\pm 0, \mp 0, - 0) &=& - 0 \\
+   & \fma_N(z_1, z_2, z_3) &=& \ieee_N(z_1 \cdot z_2 + z_3) \\
    \end{array}
 
 
@@ -1507,7 +1561,7 @@ This non-deterministic result is expressed by the following auxiliary function p
    \feq_N(\pm \NAN(n), z_2) &=& 0 \\
    \feq_N(z_1, \pm \NAN(n)) &=& 0 \\
    \feq_N(\pm 0, \mp 0) &=& 1 \\
-   \feq_N(z_1, z_2) &=& \bool(z_1 = z_2) \\
+   \feq_N(z_1, z_2) &=& \tobool(z_1 = z_2) \\
    \end{array}
 
 
@@ -1529,7 +1583,7 @@ This non-deterministic result is expressed by the following auxiliary function p
    \fne_N(\pm \NAN(n), z_2) &=& 1 \\
    \fne_N(z_1, \pm \NAN(n)) &=& 1 \\
    \fne_N(\pm 0, \mp 0) &=& 0 \\
-   \fne_N(z_1, z_2) &=& \bool(z_1 \neq z_2) \\
+   \fne_N(z_1, z_2) &=& \tobool(z_1 \neq z_2) \\
    \end{array}
 
 
@@ -1566,7 +1620,7 @@ This non-deterministic result is expressed by the following auxiliary function p
    \flt_N(z_1, + \infty) &=& 1 \\
    \flt_N(z_1, - \infty) &=& 0 \\
    \flt_N(\pm 0, \mp 0) &=& 0 \\
-   \flt_N(z_1, z_2) &=& \bool(z_1 < z_2) \\
+   \flt_N(z_1, z_2) &=& \tobool(z_1 < z_2) \\
    \end{array}
 
 
@@ -1603,7 +1657,7 @@ This non-deterministic result is expressed by the following auxiliary function p
    \fgt_N(z_1, + \infty) &=& 0 \\
    \fgt_N(z_1, - \infty) &=& 1 \\
    \fgt_N(\pm 0, \mp 0) &=& 0 \\
-   \fgt_N(z_1, z_2) &=& \bool(z_1 > z_2) \\
+   \fgt_N(z_1, z_2) &=& \tobool(z_1 > z_2) \\
    \end{array}
 
 
@@ -1640,7 +1694,7 @@ This non-deterministic result is expressed by the following auxiliary function p
    \fle_N(z_1, + \infty) &=& 1 \\
    \fle_N(z_1, - \infty) &=& 0 \\
    \fle_N(\pm 0, \mp 0) &=& 1 \\
-   \fle_N(z_1, z_2) &=& \bool(z_1 \leq z_2) \\
+   \fle_N(z_1, z_2) &=& \tobool(z_1 \leq z_2) \\
    \end{array}
 
 
@@ -1677,7 +1731,7 @@ This non-deterministic result is expressed by the following auxiliary function p
    \fge_N(z_1, + \infty) &=& 0 \\
    \fge_N(z_1, - \infty) &=& 1 \\
    \fge_N(\pm 0, \mp 0) &=& 1 \\
-   \fge_N(z_1, z_2) &=& \bool(z_1 \geq z_2) \\
+   \fge_N(z_1, z_2) &=& \tobool(z_1 \geq z_2) \\
    \end{array}
 
 
@@ -1847,14 +1901,14 @@ Conversions
 
 * Else if :math:`z` is positive infinity, then return :math:`2^{N-1} - 1`.
 
-* Else, return :math:`\sats_N(\trunc(z))`.
+* Else, return the value whose signed interpretation is :math:`\sats_N(\trunc(z))`.
 
 .. math::
    \begin{array}{lll@{\qquad}l}
    \truncsats_{M,N}(\pm \NAN(n)) &=& 0 \\
    \truncsats_{M,N}(- \infty) &=& -2^{N-1} \\
    \truncsats_{M,N}(+ \infty) &=& 2^{N-1}-1 \\
-   \truncsats_{M,N}(z) &=& \sats_N(\trunc(z)) \\
+   \truncsats_{M,N}(z) &=& \signed_N^{-1}(\sats_N(\trunc(z))) \\
    \end{array}
 
 
@@ -1952,11 +2006,11 @@ Conversions
 
 * Let :math:`j` be the :ref:`signed interpretation <aux-signed>` of :math:`i` of size :math:`M`.
 
-* Return :math:`\sats_N(j)`.
+* Return the value whose signed interpretation is :math:`\sats_N(j)`.
 
 .. math::
    \begin{array}{lll@{\qquad}l}
-   \narrows_{M,N}(i) &=& \sats_N(\signed_M(i))
+   \narrows_{M,N}(i) &=& \signed_N^{-1}(\sats_N(\signed_M(i)))
    \end{array}
 
 
@@ -1973,3 +2027,280 @@ Conversions
    \begin{array}{lll@{\qquad}l}
    \narrowu_{M,N}(i) &=& \satu_N(\signed_M(i))
    \end{array}
+
+
+.. _relaxed-ops:
+.. _aux-relaxed:
+
+Relaxed Operations
+~~~~~~~~~~~~~~~~~~
+
+The result of *relaxed* operators are *implementation-dependent*, because the set of possible results may depend on properties of the host environment, such as its hardware.
+Technically, their behaviour is controlled by a set of *global parameters* to the semantics that an implementation can instantiate in different ways.
+These choices are fixed, that is, parameters are constant during the execution of any given program.
+
+Every such parameter is an index into a sequence of possible sets of results and must be instantiated to a defined index.
+In the :ref:`deterministic profile <profile-deterministic>`, every parameter is prescribed to be 0.
+This behaviour is expressed by the following auxiliary function,
+where :math:`R` is a global parameter selecting one of the allowed outcomes:
+
+.. math::
+   \begin{array}{@{}lcll}
+   \EXPROFDET & \relaxed(R)[ A_0, \dots, A_n ] = A_R \\
+   & \relaxed(R)[ A_0, \dots, A_n ] = A_0 \\
+   \end{array}
+
+.. note::
+   Each parameter can be thought of as inducing a family of operations
+   that is fixed to one particular choice by an implementation.
+   The fixed operation itself can still be non-deterministic or partial.
+
+   Implementations are expexted to either choose the behaviour that is the most efficient on the underlying hardware,
+   or the behaviour of the deterministic profile.
+
+
+.. _op-frelaxed_madd:
+
+:math:`\frelaxedmadd_N(z_1, z_2, z_3)`
+......................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{fmadd}} \in \{0, 1\}`.
+
+* Return :math:`\relaxed(R_{\F{fmadd}})[\fadd_N(\fmul_N(z_1, z_2), z_3)` or :math:`\fma_N(z_1, z_2, z_3)]`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \frelaxedmadd_N(z_1, z_2, z_3) &=& \relaxed(R_{\F{fmadd}})[ \fadd_N(\fmul_N(z_1, z_2), z_3), \fma_N(z_1, z_2, z_3) ] \\
+   \end{array}
+
+.. note::
+   Relaxed multiply-add allows for fused or unfused results,
+   which leads to implementation-dependent rounding behaviour.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   the unfused behaviour is used.
+
+
+.. _op-frelaxed_nmadd:
+
+:math:`\frelaxednmadd_N(z_1, z_2, z_3)`
+.......................................
+
+* Return :math:`\frelaxedmadd(-z_1, z_2, z_3)`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \frelaxednmadd_N(z_1, z_2, z_3) &=& \frelaxedmadd_N(-z_1, z_2, z_3) \\
+   \end{array}
+
+.. note::
+   This operation is implementation-dependent because :math:`\frelaxedmadd` is implementation-dependent.
+
+
+.. _op-frelaxed_min:
+
+:math:`\frelaxedmin_N(z_1, z_2)`
+................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{fmin}} \in \{0, 1, 2, 3\}`.
+
+* If :math:`z_1` is a NaN, then return :math:`\relaxed(R_{\F{fmin}})[ \fmin_N(z_1, z_2)`, \NAN(n), z_2, z_2 ]`.
+
+* If :math:`z_2` is a NaN, then return :math:`\relaxed(R_{\F{fmin}})[ \fmin_N(z_1, z_2)`, z_1, \NAN(n), z_1 ]`.
+
+* If both :math:`z_1` and :math:`z_2` are zeroes of opposite sign, then return :math:`\relaxed(R_{\F{fmin}})[ \fmin_N(z_1, z_2)`, \pm 0, \mp 0, -0 ]`.
+
+* Return :math:`\fmin_N(z_1, z_2)`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \frelaxedmin_N(\pm \NAN(n), z_2) &=& \relaxed(R_{\F{fmin}})[ \fmin_N(\pm \NAN(n), z_2), \NAN(n), z_2, z_2 ] \\
+   \frelaxedmin_N(z_1, \pm \NAN(n)) &=& \relaxed(R_{\F{fmin}})[ \fmin_N(z_1, \pm \NAN(n)), z_1, \NAN(n), z_1 ] \\
+   \frelaxedmin_N(\pm 0, \mp 0) &=& \relaxed(R_{\F{fmin}})[ \fmin_N(\pm 0, \mp 0), \pm 0, \mp 0, -0 ] \\
+   \frelaxedmin_N(z_1, z_2) &=& \fmin_N(z_1, z_2) & (\otherwise) \\
+   \end{array}
+
+.. note::
+   Relaxed minimum is implementation-dependent for NaNs and for zeroes with different signs.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like regular :math:`\fmin`.
+
+
+.. _op-frelaxed_max:
+
+:math:`\frelaxedmax_N(z_1, z_2)`
+................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{fmax}} \in \{0, 1, 2, 3\}`.
+
+* If :math:`z_1` is a NaN, then return :math:`\relaxed(R_{\F{fmax}})[ \fmax_N(z_1, z_2)`, \NAN(n), z_2, z_2 ]`.
+
+* If :math:`z_2` is a NaN, then return :math:`\relaxed(R_{\F{fmax}})[ \fmax_N(z_1, z_2)`, z_1, \NAN(n), z_1 ]`.
+
+* If both :math:`z_1` and :math:`z_2` are zeroes of opposite sign, then return :math:`\relaxed(R_{\F{fmax}})[ \fmax_N(z_1, z_2)`, \pm 0, \mp 0, +0 ]`.
+
+* Return :math:`\fmax_N(z_1, z_2)`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \frelaxedmax_N(\pm \NAN(n), z_2) &=& \relaxed(R_{\F{fmax}})[ \fmax_N(\pm \NAN(n), z_2), \NAN(n), z_2, z_2 ] \\
+   \frelaxedmax_N(z_1, \pm \NAN(n)) &=& \relaxed(R_{\F{fmax}})[ \fmax_N(z_1, \pm \NAN(n)), z_1, \NAN(n), z_1 ] \\
+   \frelaxedmax_N(\pm 0, \mp 0) &=& \relaxed(R_{\F{fmax}})[ \fmax_N(\pm 0, \mp 0), \pm 0, \mp 0, +0 ] \\
+   \frelaxedmax_N(z_1, z_2) &=& \fmax_N(z_1, z_2) & (\otherwise) \\
+   \end{array}
+
+.. note::
+   Relaxed maximum is implementation-dependent for NaNs and for zeroes with different signs.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like regular :math:`\fmax`.
+
+
+.. _op-irelaxed_dot_mul:
+
+:math:`\irelaxeddotmul_{M,N}(i_1, i_2)`
+.......................................
+
+This is an auxiliary operator for the specification of |RELAXEDDOT|.
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{idot}} \in \{0, 1\}`.
+
+* Return :math:`\relaxed(R_{\F{idot}})[ \imul_N(\extends_{M,N}(i_1), \extends_{M,N}(i_2)), \imul_N(\extends_{M,N}(i_1), \extendu_{M,N}(i_2)) ]`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \irelaxeddotmul_{M,N}(i_1, i_2) &=& \relaxed(R_{\F{idot}})[ \imul_N(\extends_{M,N}(i_1), \extends_{M,N}(i_2)), \imul_N(\extends_{M,N}(i_1), \extendu_{M,N}(i_2)) ] \\
+   \end{array}
+
+.. note::
+   Relaxed dot product is implementation-dependent when the second operand is negative in a signed intepretation.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like signed dot product.
+
+
+.. _op-irelaxed_q15mulr_s:
+
+:math:`\irelaxedq15mulrs_N(i_1, i_2)`
+.....................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{iq15mulr}} \in \{0, 1\}`.
+
+* If both :math:`i_1` and :math:`i_2` equal :math:`(\signed^{-1}_N(-2^{N-1})`, then return :math:`\relaxed(R_{\F{iq15mulr}})[ 2^{N-1}-1, \signed^{-1}_N(-2^{N-1}) ]`.
+
+* Return :math:`\iq15mulrsats(i_1, i_2)`
+
+.. math::
+   \begin{array}{@{}lcll}
+   \irelaxedq15mulrs_N(\signed^{-1}_N(-2^{N-1}), \signed^{-1}_N(-2^{N-1})) &=& \relaxed(R_{\F{iq15mulr}})[ 2^{N-1}-1, \signed^{-1}_N(-2^{N-1}) ] & \\
+   \irelaxedq15mulrs_N(i_1, i_2) &=& \iq15mulrsats(i_1, i_2)
+   \end{array}
+
+.. note::
+   Relaxed Q15 multiplication is implementation-dependent when the result overflows.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like regular :math:`\iq15mulrsats`.
+
+
+.. _op-relaxed_trunc:
+.. _op-relaxed_trunc_u:
+
+:math:`\relaxedtrunc^u_{M,N}(z)`
+................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{trunc\_u}} \in \{0, 1\}`.
+
+* If :math:`z` is normal or subnormal and :math:`\trunc(z)` is non-negative and less than :math:`2^N`, then return :math:`\truncu_{M,N}(z)`.
+
+* Else, return :math:`\relaxed(R_{\F{trunc\_u}})[ \truncsatu_{M,N}(z), \mathbf{R} ]`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \relaxedtrunc^u_{M,N}(\pm q) &=& \truncu_{M,N}(\pm q) & (\iff 0 \leq \trunc(\pm q) < 2^N) \\
+   \relaxedtrunc^u_{M,N}(z) &=& \relaxed(R_{\F{trunc\_u}})[ \truncsatu_{M,N}(z), \mathbf{R}] & (\otherwise) \\
+   \end{array}
+
+.. note::
+   Relaxed unsigned truncation is non-deterministic for NaNs and out-of-range values.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like regular :math:`\truncsatu`.
+
+
+.. _op-relaxed_trunc_s:
+
+:math:`\relaxedtrunc^s_{M,N}(z)`
+................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{trunc\_s}} \in \{0, 1\}`.
+
+* If :math:`z` is normal or subnormal and :math:`\trunc(z)` is greater than or equal to :math:`-2^{N-1}` and less than :math:`2^{N-1}`, then return :math:`\truncs_{M,N}(z)`.
+
+* Else, return :math:`\relaxed(R_{\F{trunc\_s}})[ \truncsats_{M,N}(z), \mathbf{R} ]`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \relaxedtrunc^s_{M,N}(\pm q) &=& \truncs_{M,N}(\pm q) & (\iff -2^{N-1} \leq \trunc(\pm q) < 2^{N-1}) \\
+   \relaxedtrunc^s_{M,N}(z) &=& \relaxed(R_{\F{trunc\_s}})[ \truncsats_{M,N}(z), \mathbf{R}] & (\otherwise) \\
+   \end{array}
+
+.. note::
+   Relaxed signed truncation is non-deterministic for NaNs and out-of-range values.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like regular :math:`\truncsats`.
+
+
+.. _op-irelaxed_swizzle:
+.. _op-irelaxed_swizzle_lane:
+
+:math:`\irelaxedswizzle(i^n, j^n)`
+..................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{swizzle}} \in \{0, 1\}`.
+
+* For each :math:`j_k` in :math:`j^n`, let :math:`r_k` be the value :math:`\irelaxedswizzlelane(i^n, j_k)`.
+
+* Let :math:`r^n` be the concatenation of all :math:`r_k`.
+
+* Return :math:`r^n`.
+
+.. math::
+   \begin{array}{@{}lcl}
+   \irelaxedswizzle(i^n, j^n) &=& \irelaxedswizzlelane(i^n, j)^n \\
+   \end{array}
+
+where:
+
+.. math::
+   \begin{array}{@{}lcll}
+   \irelaxedswizzlelane(i^n, j) &=& i[j] & (\iff j < 16) \\
+   \irelaxedswizzlelane(i^n, j) &=& 0 & (\iff \signed_8(j) < 0) \\
+   \irelaxedswizzlelane(i^n, j) &=& \relaxed(R_{\F{swizzle}})[ 0, i^n[j \mod n] ] & (\otherwise) \\
+   \end{array}
+
+.. note::
+   Relaxed swizzle is implementation-dependent
+   if the signed interpretation of any of the 8-bit indices in :math:`j^n` is larger than or equal to 16.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like regular :math:`\SWIZZLE`.
+
+
+.. _op-irelaxed_laneselect:
+
+:math:`\irelaxedlaneselect_N(i_1, i_2, i_3)`
+............................................
+
+The implementation-specific behaviour of this operation is determined by the global parameter :math:`R_{\F{laneselect}} \in \{0, 1\}`.
+
+* If :math:`i_3` is smaller than :math:`2^{N-1}`, then let :math:`i'_3` be the value :math:`0`, otherwise :math:`2^N-1`.
+
+* Let :math:`i''_3` be :math:`\relaxed(R_{\F{laneselect}})[i_3, i'_3]`.
+
+* Return :math:`\ibitselect_N(i_1, i_2, i''_3)`.
+
+.. math::
+   \begin{array}{@{}lcll}
+   \irelaxedlaneselect_N(i_1, i_2, i_3) &=& \ibitselect_N(i_1, i_2, \relaxed(R_{\F{laneselect}})[ i_3, \extends_{1,N}(\ishru_N(i_3, N-1)) ]) \\
+   \end{array}
+
+.. note::
+   Relaxed lane selection is non-deterministic when the mask mixes set and cleared bits,
+   since the value of the high bit may or may not be expanded to all bits.
+   In the :ref:`deterministic profile <profile-deterministic>`,
+   it behaves like :math:`\ibitselect`.

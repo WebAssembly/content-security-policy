@@ -29,17 +29,17 @@ let num_lanes shape =
   | F64x2 _ -> 2
 
 let type_of_lane = function
-  | I8x16 _ | I16x8 _ | I32x4 _ -> Types.I32Type
-  | I64x2 _ -> Types.I64Type
-  | F32x4 _ -> Types.F32Type
-  | F64x2 _ -> Types.F64Type
+  | I8x16 _ | I16x8 _ | I32x4 _ -> Types.I32T
+  | I64x2 _ -> Types.I64T
+  | F32x4 _ -> Types.F32T
+  | F64x2 _ -> Types.F64T
 
 
 (* Shape-based operations *)
 
-module Convert (Lane : sig type t end) =
+module Conversion (Lane : sig type t end) =
 struct
-  module type S =
+  module type T =
   sig
     val shape : shape
     val to_lanes : t -> Lane.t list
@@ -94,7 +94,7 @@ sig
   val q15mulr_sat_s : t -> t -> t
 end
 
-module MakeIntShape (IXX : Ixx.S) (Cvt : Convert(IXX).S) :
+module MakeIntShape (IXX : Ixx.T) (Cvt : Conversion(IXX).T) :
   IntShape with type lane = IXX.t =
 struct
   type lane = IXX.t
@@ -191,13 +191,15 @@ sig
   val sub : t -> t -> t
   val mul : t -> t -> t
   val div : t -> t -> t
+  val fma : t -> t -> t -> t
+  val fnma : t -> t -> t -> t
   val min : t -> t -> t
   val max : t -> t -> t
   val pmin : t -> t -> t
   val pmax : t -> t -> t
 end
 
-module MakeFloatShape (FXX : Fxx.S) (Cvt : Convert(FXX).S) :
+module MakeFloatShape (FXX : Fxx.T) (Cvt : Conversion(FXX).T) :
   FloatShape with type lane = FXX.t =
 struct
   type lane = FXX.t
@@ -233,6 +235,9 @@ struct
   let sub = binop FXX.sub
   let mul = binop FXX.mul
   let div = binop FXX.div
+  let fma x y z =
+    of_lanes (Lib.List.map3 FXX.fma (to_lanes x) (to_lanes y) (to_lanes z))
+  let fnma x y z = fma (unop FXX.neg x) y z
   let min = binop FXX.min
   let max = binop FXX.max
   let pmin = binop (fun x y -> if FXX.lt y x then y else x)
@@ -245,6 +250,7 @@ module I8x16 = MakeIntShape (I8)
     let to_lanes s =
       List.init 16 (fun i -> Int32.of_int (Bytes.get_int8 (Bytes.of_string s) i))
     let of_lanes fs =
+      assert (List.length fs = 16);
       let b = Bytes.create bytewidth in
       List.iteri (fun i f -> Bytes.set_int8 b i (Int32.to_int f)) fs;
       Bytes.to_string b
@@ -256,6 +262,7 @@ module I16x8 = MakeIntShape (I16)
     let to_lanes s =
       List.init 8 (fun i -> Int32.of_int (Bytes.get_int16_le (Bytes.of_string s) (i*2)))
     let of_lanes fs =
+      assert (List.length fs = 8);
       let b = Bytes.create bytewidth in
       List.iteri (fun i f -> Bytes.set_int16_le b (i*2) (Int32.to_int f)) fs;
       Bytes.to_string b
@@ -267,6 +274,7 @@ module I32x4 = MakeIntShape (I32)
     let to_lanes s =
       List.init 4 (fun i -> I32.of_bits (Bytes.get_int32_le (Bytes.of_string s) (i*4)))
     let of_lanes fs =
+      assert (List.length fs = 4);
       let b = Bytes.create bytewidth in
       List.iteri (fun i f -> Bytes.set_int32_le b (i*4) (I32.to_bits f)) fs;
       Bytes.to_string b
@@ -278,6 +286,7 @@ module I64x2 = MakeIntShape (I64)
     let to_lanes s =
       List.init 2 (fun i -> I64.of_bits (Bytes.get_int64_le (Bytes.of_string s) (i*8)))
     let of_lanes fs =
+      assert (List.length fs = 2);
       let b = Bytes.create bytewidth in
       List.iteri (fun i f -> Bytes.set_int64_le b (i*8) (I64.to_bits f)) fs;
       Bytes.to_string b
@@ -289,6 +298,7 @@ module F32x4 = MakeFloatShape (F32)
     let to_lanes s =
       List.init 4 (fun i -> F32.of_bits (Bytes.get_int32_le (Bytes.of_string s) (i*4)))
     let of_lanes fs =
+      assert (List.length fs = 4);
       let b = Bytes.create bytewidth in
       List.iteri (fun i f -> Bytes.set_int32_le b (i*4) (F32.to_bits f)) fs;
       Bytes.to_string b
@@ -300,6 +310,7 @@ module F64x2 = MakeFloatShape (F64)
     let to_lanes s =
       List.init 2 (fun i -> F64.of_bits (Bytes.get_int64_le (Bytes.of_string s) (i*8)))
     let of_lanes fs =
+      assert (List.length fs = 2);
       let b = Bytes.create bytewidth in
       List.iteri (fun i f -> Bytes.set_int64_le b (i*8) (F64.to_bits f)) fs;
       Bytes.to_string b
@@ -375,21 +386,32 @@ struct
 
   let extadd ext x y = Int32.add (ext x) (ext y)
   let extadd_pairwise_s x =
-    I16x8.of_lanes (Lib.List.pairwise (extadd ext_s) (I8x16.to_lanes x))
+    I16x8.of_lanes (Lib.List.map_pairwise (extadd ext_s) (I8x16.to_lanes x))
   let extadd_pairwise_u x =
-    I16x8.of_lanes (Lib.List.pairwise (extadd ext_u) (I8x16.to_lanes x))
+    I16x8.of_lanes (Lib.List.map_pairwise (extadd ext_u) (I8x16.to_lanes x))
+
+  let dot_s x y =
+    let xs = I8x16.to_lanes x in
+    let ys = I8x16.to_lanes y in
+    let rec dot xs ys =
+      match xs, ys with
+      | x1::x2::xs', y1::y2::ys' ->
+        Int32.(add (mul x1 y1) (mul x2 y2)) :: dot xs' ys'
+      | [], [] -> []
+      | _, _ -> assert false
+    in I16x8.of_lanes (dot xs ys)
 end
 
 module I32x4_convert =
 struct
   let convert f v = I32x4.of_lanes (List.map f (F32x4.to_lanes v))
-  let trunc_sat_f32x4_s = convert I32_convert.trunc_sat_f32_s
-  let trunc_sat_f32x4_u = convert I32_convert.trunc_sat_f32_u
+  let trunc_sat_f32x4_s = convert Convert.I32_.trunc_sat_f32_s
+  let trunc_sat_f32x4_u = convert Convert.I32_.trunc_sat_f32_u
 
   let convert_zero f v =
     I32x4.of_lanes (List.map f (F64x2.to_lanes v) @ I32.[zero; zero])
-  let trunc_sat_f64x2_s_zero = convert_zero I32_convert.trunc_sat_f64_s
-  let trunc_sat_f64x2_u_zero = convert_zero I32_convert.trunc_sat_f64_u
+  let trunc_sat_f64x2_s_zero = convert_zero Convert.I32_.trunc_sat_f64_s
+  let trunc_sat_f64x2_u_zero = convert_zero Convert.I32_.trunc_sat_f64_u
 
   let ext_s = Int32.logand 0xffffffffl
   let ext_u = Int32.logand 0xffffl
@@ -412,6 +434,20 @@ struct
       | _, _ -> assert false
     in I32x4.of_lanes (dot xs ys)
 
+  let dot_add_s x y z =
+    let xs = I8x16.to_lanes x in
+    let ys = I8x16.to_lanes y in
+    let rec dot xs ys =
+      match xs, ys with
+      | x1::x2::x3::x4::xs', y1::y2::y3::y4::ys' ->
+        Int32.(add
+          (add (mul x1 y1) (mul x2 y2))
+          (add (mul x3 y3) (mul x4 y4))
+        ) :: dot xs' ys'
+      | [], [] -> []
+      | _, _ -> assert false
+    in I32x4.add (I32x4.of_lanes (dot xs ys)) z
+
   let extmul_low_s x y = I32x4.mul (extend_low_s x) (extend_low_s y)
   let extmul_high_s x y = I32x4.mul (extend_high_s x) (extend_high_s y)
   let extmul_low_u x y = I32x4.mul (extend_low_u x) (extend_low_u y)
@@ -419,9 +455,9 @@ struct
 
   let extadd ext x y = Int32.add (ext x) (ext y)
   let extadd_pairwise_s x =
-    I32x4.of_lanes (Lib.List.pairwise (extadd ext_s) (I16x8.to_lanes x))
+    I32x4.of_lanes (Lib.List.map_pairwise (extadd ext_s) (I16x8.to_lanes x))
   let extadd_pairwise_u x =
-    I32x4.of_lanes (Lib.List.pairwise (extadd ext_u) (I16x8.to_lanes x))
+    I32x4.of_lanes (Lib.List.map_pairwise (extadd ext_u) (I16x8.to_lanes x))
 end
 
 module I64x2_convert =
@@ -433,7 +469,8 @@ struct
     I64x2.of_lanes
       (List.map
         (fun i32 -> ext (Int64.of_int32 i32))
-        (take_or_drop 2 (I32x4.to_lanes x)))
+        (take_or_drop 2 (I32x4.to_lanes x))
+      )
   let extend_low_s = extend Lib.List.take ext_s
   let extend_high_s = extend Lib.List.drop ext_s
   let extend_low_u = extend Lib.List.take ext_u
@@ -448,22 +485,22 @@ end
 module F32x4_convert =
 struct
   let convert f v = F32x4.of_lanes (List.map f (I32x4.to_lanes v))
-  let convert_i32x4_s = convert F32_convert.convert_i32_s
-  let convert_i32x4_u = convert F32_convert.convert_i32_u
+  let convert_i32x4_s = convert Convert.F32_.convert_i32_s
+  let convert_i32x4_u = convert Convert.F32_.convert_i32_u
   let demote_f64x2_zero v =
     F32x4.of_lanes
-      (List.map F32_convert.demote_f64 (F64x2.to_lanes v) @ F32.[zero; zero])
+      (List.map Convert.F32_.demote_f64 (F64x2.to_lanes v) @ F32.[zero; zero])
 end
 
 module F64x2_convert =
 struct
   let convert f v =
     F64x2.of_lanes (List.map f (Lib.List.take 2 (I32x4.to_lanes v)))
-  let convert_i32x4_s = convert F64_convert.convert_i32_s
-  let convert_i32x4_u = convert F64_convert.convert_i32_u
+  let convert_i32x4_s = convert Convert.F64_.convert_i32_s
+  let convert_i32x4_u = convert Convert.F64_.convert_i32_u
   let promote_low_f32x4 v =
     F64x2.of_lanes
-      (List.map F64_convert.promote_f32 (Lib.List.take 2 (F32x4.to_lanes v)))
+      (List.map Convert.F64_.promote_f32 (Lib.List.take 2 (F32x4.to_lanes v)))
 end
 
 
